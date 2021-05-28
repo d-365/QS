@@ -121,17 +121,20 @@ def addOrder_data(phone, city_name):
     }
 
     payload = {
-        "realname": "接口生成", "age": 99, "sex": sex['1'], "loan_money": "3", "loan_time": 36,
-        "loan_goal": loan_goal[0],
-        "loan_id_name": loan_id_name['上班族'], "city_name": city_name, "social_security": social_security["无本地社保"],
-        "provident_fund": provident_fund["无本地公积金"],
-        "is_house": is_house['有房产，接受抵押'], "is_car": is_car['无车产'], "credit_money": credit_money['3000元'],
-        "is_wld": is_wld[0], "is_zmf": is_zmf[0], "zmf": "0",
-        "credit_record": credit_record['无信用卡或贷款'], "lnsurance": "无", "education": education["大专"], "workunit": "轻山",
-        "money": money["6000元"],"income_type": income_type[0],
-        "loan": {"money": money["6000元"], "income_type": income_type[0]}, "wld_data": {}, "phone": phone,
-        "workage": "3个月以下", "car_money": "10万以下", "lnsurance_value": "",
-        "lnsurance_name": "", "loan_id": "0", "car_data": {"car_money": "10万以下"}, "house_data": {}
+        "realname": "接口生成", "age": 99, "sex": sex['1'],
+        "loan_money": "3", "loan_time": 36, "loan_goal": loan_goal[0],
+        "loan_id_name": loan_id_name['上班族'], "city_name": city_name,
+        "provident_fund": provident_fund["无本地公积金"], "social_security": social_security["无本地社保"],
+        "credit_money": credit_money['3000元'], "credit_record": credit_record['无信用卡或贷款'],
+        "is_wld": is_wld[0], "wld_data": {}, "is_zmf": is_zmf[0], "zmf": "0",
+        "lnsurance": "无", "lnsurance_name": "", "lnsurance_value": "",
+        "workunit": "轻山", "workage": "3个月以下",
+        "money": money["6000元"], "income_type": income_type[0],
+        "loan": {"money": money["6000元"], "income_type": income_type[0]},
+        "phone": phone, "education": education["大专"],
+        "is_car": is_car['无车产'], "car_money": "10万以下", "car_data": {"car_money": "10万以下"},
+        "is_house": is_house['有房产，接受抵押'], "house_data": {},
+        "loan_id": "0"
     }
 
     return payload
