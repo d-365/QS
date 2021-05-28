@@ -4,7 +4,7 @@
 # @file: dataBase.py
 # @time: 2021/5/27 15:38
 # @describe :
-
+from sqlite3 import OperationalError
 import pymysql
 
 
@@ -27,9 +27,8 @@ class DataBase:
             self.cursor.execute(sql)
             self.conn.commit()
             sql_value = self.cursor.fetchmany(2)
-            print(sql_value)
             return sql_value
-        except BaseException:
+        except OperationalError:
             self.conn.rollback()
 
 

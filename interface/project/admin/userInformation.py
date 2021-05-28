@@ -18,5 +18,5 @@ class userInfo_pro:
     # phoneSale/addOrder 电销中心_新增订单
     def addOrder(self, data, cookies=''):
         url = self.caps['admin'] + 'api/v2.0.0/UserInformation/phoneSale/addOrder'
-        res = self.re.post_json(url=url, datas=data,cookies=cookies)
+        res = self.re.post_json(url=url, datas=data, cookies=cookies)
         return res
