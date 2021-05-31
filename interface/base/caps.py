@@ -10,6 +10,8 @@ def Caps(env=''):
     if env == '':
         caps = {
             'admin': 'http://testadmin.wanqiandaikuan.com/',
+            'api': 'http://testapi.wanqiandaikuan.com/',
+            'jdf': 'http://testjdf.wanqiandaikuan.com/'
 
         }
         return caps

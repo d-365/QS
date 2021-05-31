@@ -32,26 +32,43 @@ class Base_requests:
                 data_json = json.dumps(datas)
                 header_data = {'Content-Type': 'application/json'}
                 response = requests.post(url=url, headers=header_data, data=data_json, cookies=cookies)
-                return response
+                return response.json()
             else:
                 data_json = json.dumps(datas)
                 response = requests.post(url=url, headers=headers, data=data_json, cookies=cookies)
-                return response
+                return response.json()
         except:
             pass
 
     # get方法
     @staticmethod
-    def get(url=None, headers=None, data=None):
-        response = requests.get(url=url, headers=headers, data=data)
+    def get(url='', headers='', params=''):
+        if headers == '':
+            header = {
+                'auth': '98ef33',
+                'system': 'android',
+                'version': '3.1.2'
+            }
+            response = requests.get(url=url, headers=header, params=params)
+        else:
+            response = requests.get(url=url, headers=headers, params=params)
         return response.json()
 
     # post_cookie(登录接口使用，返回cookies信息)
     @staticmethod
-    def post_login(url='', headers='', datas=''):
+    def post_login(url='', datas=''):
         data_json = json.dumps(datas)
         header_data = {'Content-Type': 'application/json'}
         response = requests.post(url=url, headers=header_data, data=data_json)
+        cookies = response.cookies
+        cookie = requests.utils.dict_from_cookiejar(cookies)
+        return cookie
+
+    # get_cookie
+    @staticmethod
+    def get_cookie(url='', headers='', params=''):
+        response = requests.get(url=url, headers=headers, params=params)
+        print(response.json())
         cookies = response.cookies
         cookie = requests.utils.dict_from_cookiejar(cookies)
         return cookie

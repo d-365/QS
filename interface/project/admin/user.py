@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @author: dujun
 # @software: PyCharm
-# @file: user.py
+# @file: api.py
 # @time: 2021/5/27 11:48
 # @describe :
 
@@ -15,7 +15,7 @@ class user_pro:
         self.re = Base_requests()
         self.caps = Caps(env=environment)
 
-    # user/login
+    # api/login
     def login(self, payload):
         url = self.caps['admin'] + '/api/sms/interface/dologin'
         res = self.re.post_login(url=url, datas=payload)

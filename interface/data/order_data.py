@@ -6,7 +6,7 @@
 # @describe :
 
 # 好单多多新增订单需传入订单数据
-def addOrder_data(phone, city_name):
+def addOrder_data(phone='', city_name=''):
     """
 
     :param phone: 传入手机号
@@ -57,6 +57,26 @@ def addOrder_data(phone, city_name):
         '有房产，接受抵押': '有房产，接受抵押'
     }
 
+    # 房产类型
+    house_type = {
+        '按揭房': '按揭房',
+        '全款房': '全款房',
+        '自建房': '自建房',
+        '安置房': '安置房',
+        '其他': '其他'
+    }
+
+    # 房产估值
+    house_money = {
+        '50万及以下': '50万及以下',
+        '50万-100万': '50万-100万',
+        '100万-200万': '100万-200万',
+        '200万-500万': '200万-500万',
+        '500万-1000万': '500万-1000万',
+        '1000万以上': '1000万以上'
+
+    }
+
     # 名下车产
     is_car = {
         '无车产': '无车产',
@@ -64,6 +84,17 @@ def addOrder_data(phone, city_name):
         '有车，不接受抵押': '有车，不接受抵押',
         '有车，可接受抵押': '有车，可接受抵押',
     }
+
+    # 车产估值
+    car_money = {
+        '10万以下': '10万以下',
+        '10万-20万': '10万-20万',
+        '20万-30万': '20万-30万',
+        '30万-50万': '30万-50万',
+        '50万以上': '50万以上',
+        'none': None
+    }
+
     # 信用卡额度
     credit_money = {
         '无信用卡': '无信用卡',
@@ -122,7 +153,7 @@ def addOrder_data(phone, city_name):
 
     payload = {
         "realname": "接口生成", "age": 99, "sex": sex['1'],
-        "loan_money": "3", "loan_time": 36, "loan_goal": loan_goal[0],
+        "loan_money": "88", "loan_time": 36, "loan_goal": loan_goal[0],
         "loan_id_name": loan_id_name['上班族'], "city_name": city_name,
         "provident_fund": provident_fund["无本地公积金"], "social_security": social_security["无本地社保"],
         "credit_money": credit_money['3000元'], "credit_record": credit_record['无信用卡或贷款'],
@@ -131,10 +162,15 @@ def addOrder_data(phone, city_name):
         "workunit": "轻山", "workage": "3个月以下",
         "money": money["6000元"], "income_type": income_type[0],
         "loan": {"money": money["6000元"], "income_type": income_type[0]},
-        "phone": phone, "education": education["大专"],
-        "is_car": is_car['无车产'], "car_money": "10万以下", "car_data": {"car_money": "10万以下"},
-        "is_house": is_house['有房产，接受抵押'], "house_data": {},
-        "loan_id": "0"
+        "education": education["大专"],
+        "is_car": is_car['有车，不接受抵押'], "car_money": car_money["10万以下"],
+        "car_data": {"car_money": car_money['10万以下']},
+        "is_house": is_house['有房产，接受抵押'], "house_type": house_type["自建房"], "house_money": house_money["50万及以下"],
+        "house_data": {
+            "house_money": house_money["50万及以下"],
+            "house_type": house_type["自建房"]
+        },
+        "loan_id": "0", "phone": phone
     }
 
     return payload

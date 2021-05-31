@@ -27,13 +27,12 @@ class userInfo:
         user = user_pro()
         data = {"phone": "17637898368", "code": "1234"}
         self.login_cookie = user.login(payload=data)
-        print(self.login_cookie)
 
     def addOrder(self):
         userInfo = userInfo_pro()
         payload = addOrder_data(phone='11111111119', city_name='杭州市')
         re = userInfo.addOrder(data=payload, cookies=self.login_cookie)
-        print(re.json())
+        print(re)
 
 
 if __name__ == "__main__":

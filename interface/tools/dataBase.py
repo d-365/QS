@@ -26,7 +26,7 @@ class DataBase:
         try:
             self.cursor.execute(sql)
             self.conn.commit()
-            sql_value = self.cursor.fetchmany(2)
+            sql_value = self.cursor.fetchmany()
             return sql_value
         except OperationalError:
             self.conn.rollback()
