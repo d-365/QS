@@ -22,7 +22,7 @@ class api_pro:
         return res
 
     # 信业帮查询当前线索信息
-    def current_loanList(self, datas):
+    def current_loanList(self, headers='', datas=''):
         url = self.caps['api'] + 'interface/v2.0.0/loan/list'
-        res = self.re.get(url=url, params=datas)
+        res = self.re.get(url=url, headers=headers, params=datas)
         return res
