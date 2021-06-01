@@ -5,7 +5,6 @@
 # @time: 2021/5/31 14:40
 # @describe :
 import json
-
 from interface.data.order_data import addOrder_data
 from interface.project.api.api import api_pro
 from interface.project.jdf.jdf import jdf_pro
@@ -23,9 +22,9 @@ class addOrder:
 
     def test_sql(self, phone):
         # 重置信贷多多后台用户登录验证码
-        sql = "UPDATE jgq.think_sms SET STATUS=0 WHERE phone = %d;" % phone
+        sql = "UPDATE jgq.think_sms SET STATUS=0 WHERE phone = %s;" % phone
         self.database.sql_execute(sql=sql)
-        # sql2 = "DELETE  from jgq.think_loan WHERE phone = %d;" % phone
+        # sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % phone
         # self.database.sql_execute(sql2)
 
     # app登录
@@ -43,6 +42,7 @@ class addOrder:
         }
         re = self.api.user_login(data=payload)
         self.token = re['data']['token']
+        return self.token
 
     # 信业帮新增订单
     def app_addOrder(self):
@@ -71,9 +71,36 @@ class addOrder:
         print(re)
 
 
+class price_module:
+
+    def __init__(self, phone):
+        self.order = addOrder()
+        self.order.test_sql(phone)
+        self.phone = phone
+
+    # 信业帮查询当前线索信息
+    def get_loanId(self):
+        token = self.order.app_login(phone=self.phone)
+        data = {
+            'phone': self.phone,
+            'auth': '98ef33',
+            'token': token,
+            'system': 'android'
+
+        }
+        res = self.order.api.current_loanList(headers=data)
+        loanID = res['data']['loan']['id']
+        print(loanID)
+
+    # 获取对应订单列表
+
+
 if __name__ == "__main__":
-    run = addOrder()
-    run.test_sql(11111111101)
-    run.app_login('11111111101')
-    run.app_addOrder()
-    run.loanReject()
+    # run = addOrder()
+    # run.test_sql('11111111101')
+    # run.app_login('11111111101')
+    # run.app_addOrder()
+    # run.loanReject()
+
+    run2 = price_module('11111111101')
+    run2.get_loanId()
