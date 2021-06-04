@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @author: dujun
 # @software: PyCharm
-# @file: userInfo_manage.py
+# @file: addOrder_excel.py
 # @time: 2021/5/27 19:15
 # @describe :
 
@@ -17,26 +17,40 @@ class userInfo:
         self.login_cookie = None
 
     @staticmethod
-    def test_sql():
+    def test_sql(phone):
         database = DataBase()
         # 重置信贷多多后台用户登录验证码
         sql = "UPDATE admin.think_sms SET code =1234,`status`=0 WHERE phone=17637898368;"
         database.sql_execute(sql=sql)
+        sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % phone
+        database.sql_execute(sql2)
 
-    def test_login(self):
+    def manage_login(self):
         user = user_pro()
         data = {"phone": "17637898368", "code": "1234"}
         self.login_cookie = user.login(payload=data)
+        return self.login_cookie
 
-    def addOrder(self):
-        userInfo = userInfo_pro()
-        payload = addOrder_data(phone='11111111119', city_name='杭州市')
-        re = userInfo.addOrder(data=payload, cookies=self.login_cookie)
+    def addOrder(self, phone, city_name):
+        self.userInfo = userInfo_pro()
+        payload = addOrder_data(phone=phone, city_name=city_name)
+        re = self.userInfo.addOrder(data=payload, cookies=self.login_cookie)
         print(re)
+
+    # 订单列表
+    def orderList(self, phone):
+        payload = {
+            'phone': phone, 'grabTime': None, 'page': 1, 'pageSize': 10
+        }
+        re = self.userInfo.orderList(datas=payload, cookies=self.login_cookie)
+        # model_price
+        model_price = re['data']['data'][0]['model_price']
+        return model_price
 
 
 if __name__ == "__main__":
     run = userInfo()
-    run.test_sql()
-    run.test_login()
-    run.addOrder()
+    run.test_sql('11111111103')
+    run.manage_login()
+    run.addOrder('11111111103', city_name='杭州市')
+    run.orderList('11111111103')

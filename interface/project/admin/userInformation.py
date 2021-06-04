@@ -20,3 +20,9 @@ class userInfo_pro:
         url = self.caps['admin'] + 'api/v2.0.0/UserInformation/phoneSale/addOrder'
         res = self.re.post_json(url=url, datas=data, cookies=cookies)
         return res
+
+    # 查询订单详情
+    def orderList(self, datas, cookies):
+        url = self.caps['admin'] + 'api/v2.0.0/UserInformation/order/OrderList'
+        res = self.re.post_json(url=url, datas=datas, cookies=cookies)
+        return res

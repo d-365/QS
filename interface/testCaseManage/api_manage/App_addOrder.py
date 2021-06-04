@@ -4,7 +4,7 @@
 # @file: App_addOrder.py
 # @time: 2021/5/31 14:40
 # @describe :
-import json
+
 from interface.data.order_data import addOrder_data
 from interface.project.api.api import api_pro
 from interface.project.jdf.jdf import jdf_pro
@@ -24,8 +24,8 @@ class addOrder:
         # 重置信贷多多后台用户登录验证码
         sql = "UPDATE jgq.think_sms SET STATUS=0 WHERE phone = %s;" % phone
         self.database.sql_execute(sql=sql)
-        # sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % phone
-        # self.database.sql_execute(sql2)
+        sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % phone
+        self.database.sql_execute(sql2)
 
     # app登录
     def app_login(self, phone):
@@ -45,14 +45,14 @@ class addOrder:
         return self.token
 
     # 信业帮新增订单
-    def app_addOrder(self):
+    def app_addOrder(self, city_name):
         headers = {
             'phone': self.phone,
             'auth': '98ef33',
             'token': self.token,
             'Content-Type': 'application/json'
         }
-        payload = addOrder_data(city_name='杭州市')
+        payload = addOrder_data(city_name=city_name)
         re = self.jdf.firstLoan(headers=headers, datas=payload)
         print(re)
 
@@ -96,11 +96,11 @@ class price_module:
 
 
 if __name__ == "__main__":
-    # run = addOrder()
-    # run.test_sql('11111111101')
-    # run.app_login('11111111101')
-    # run.app_addOrder()
-    # run.loanReject()
+    run = addOrder()
+    run.test_sql('11111111101')
+    run.app_login('11111111101')
+    run.app_addOrder(city_name='杭州市')
+    run.loanReject()
 
-    run2 = price_module('11111111101')
-    run2.get_loanId()
+    # run2 = price_module('11111111101')
+    # run2.get_loanId()
