@@ -3,7 +3,7 @@
 # @software: PyCharm
 # @file: App_addOrder.py
 # @time: 2021/5/31 14:40
-# @describe :
+# @describe : 信业帮App新增订单
 
 from interface.data.order_data import addOrder_data
 from interface.project.api.api import api_pro
@@ -25,7 +25,8 @@ class addOrder:
         sql = "UPDATE jgq.think_sms SET STATUS=0 WHERE phone = %s;" % phone
         self.database.sql_execute(sql=sql)
         sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % phone
-        self.database.sql_execute(sql2)
+        sql3 = "UPDATE jgq.think_loan SET creat_time = '2021-05-12 14:25:28',update_time = '2021-05-12 14:25:28',create_time_auto = '2021-05-12 14:25:28',update_time_auto = '2021-05-12 14:25:28',idcard = 411324199907100550 WHERE phone = %s ; " % phone
+        self.database.sql_execute(sql3)
 
     # app登录
     def app_login(self, phone):
@@ -45,15 +46,14 @@ class addOrder:
         return self.token
 
     # 信业帮新增订单
-    def app_addOrder(self, city_name):
-        headers = {
+    def app_addOrder(self, datas):
+        header = {
             'phone': self.phone,
             'auth': '98ef33',
             'token': self.token,
             'Content-Type': 'application/json'
         }
-        payload = addOrder_data(city_name=city_name)
-        re = self.jdf.firstLoan(headers=headers, datas=payload)
+        re = self.jdf.firstLoan(headers=header, datas=datas)
         print(re)
 
     # 信业帮新增订单_校验
@@ -92,15 +92,11 @@ class price_module:
         loanID = res['data']['loan']['id']
         print(loanID)
 
-    # 获取对应订单列表
-
 
 if __name__ == "__main__":
     run = addOrder()
-    run.test_sql('11111111101')
-    run.app_login('11111111101')
-    run.app_addOrder(city_name='杭州市')
+    run.test_sql('11111111120')
+    run.app_login('11111111120')
+    payload = addOrder_data(city_name='杭州市')
+    run.app_addOrder(payload)
     run.loanReject()
-
-    # run2 = price_module('11111111101')
-    # run2.get_loanId()

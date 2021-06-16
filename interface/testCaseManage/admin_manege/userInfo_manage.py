@@ -5,10 +5,10 @@
 # @time: 2021/5/27 19:15
 # @describe :
 
-from interface.project.admin.user import user_pro
-from interface.tools.dataBase import DataBase
-from interface.project.admin.userInformation import userInfo_pro
 from interface.data.order_data import addOrder_data
+from interface.project.admin.user import user_pro
+from interface.project.admin.userInformation import userInfo_pro
+from interface.tools.dataBase import DataBase
 
 
 class userInfo:
@@ -45,12 +45,13 @@ class userInfo:
         re = self.userInfo.orderList(datas=payload, cookies=self.login_cookie)
         # model_price
         model_price = re['data']['data'][0]['model_price']
+        print(model_price)
         return model_price
 
 
 if __name__ == "__main__":
-    run = userInfo()
-    run.test_sql('11111111103')
-    run.manage_login()
-    run.addOrder('11111111103', city_name='杭州市')
-    run.orderList('11111111103')
+    for i in range(0, 2):
+        run = userInfo()
+        run.test_sql('11111111103')
+        run.manage_login()
+        run.addOrder('11111111103', city_name='杭州市')

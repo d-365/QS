@@ -3,7 +3,6 @@
 # @Author  : dunjun
 # @File    : orderData_excel.py
 # @describe: 获取excel数据,生成订单
-from pprint import pprint
 import xlrd
 
 

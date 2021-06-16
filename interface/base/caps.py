@@ -9,17 +9,27 @@ def Caps(env=''):
     # 测试环境
     if env == '':
         caps = {
+            # 信贷多多后台
             'admin': 'http://testadmin.wanqiandaikuan.com/',
+            # 信业帮App
             'api': 'http://testapi.wanqiandaikuan.com/',
-            'jdf': 'http://testjdf.wanqiandaikuan.com/'
-
+            # 信业帮App
+            'jdf': 'http://testjdf.wanqiandaikuan.com/',
+            # CRM
+            'crm': 'http://testdrkmanager.wanqiandaikuan.com/',
+            # 多融客admin
+            'crm_admin': 'http://testdrkadmin.wanqiandaikuan.com/',
+            # 好单多多App
+            'xddd2': 'http://testxddd2.wanqiandaikuan.com/'
         }
         return caps
 
     # 线上环境
     elif env == 'online':
         caps = {
+            # 信贷多多后台
             'admin': 'https://admin.91jiekuan.com/',
-
+            # CRM + 多融客 后台
+            'crm': 'https://drkmanager.wanqiandaikuan.com/'
         }
         return caps

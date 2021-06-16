@@ -4,20 +4,22 @@
 # @file: addOrder_excel.py
 # @time: 2021/5/27 19:15
 # @describe : excel读取对应用户贷款数据
+
 import xlrd
-from interface.project.admin.user import user_pro
-from interface.tools.dataBase import DataBase
-from interface.project.admin.userInformation import userInfo_pro
-from interface.data.orderData_excel import excel_addOrder
 from xlutils.copy import copy
+
+from interface.data.orderData_excel import excel_addOrder
+from interface.project.admin.user import user_pro
+from interface.project.admin.userInformation import userInfo_pro
+from interface.tools.dataBase import DataBase
 
 
 class userInfo:
-    """
 
-    """
-
-    def __init__(self,phone):
+    def __init__(self, phone):
+        """
+        :param phone: 1:清空对应phone数据库订单信息  2：使用phone新增订单
+        """
         self.database = DataBase()
         self.login_cookie = None
         self.phone = None
@@ -28,9 +30,8 @@ class userInfo:
         sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % self.phone
         self.database.sql_execute(sql2)
 
-
     def manage_login(self):
-        user = user_pro()
+        user = user_pro(environment='')
         data = {"phone": "17637898368", "code": "1234"}
         self.login_cookie = user.login(payload=data)
 

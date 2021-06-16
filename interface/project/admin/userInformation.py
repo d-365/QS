@@ -3,10 +3,10 @@
 # @software: PyCharm
 # @file: userInformation.py
 # @time: 2021/5/27 11:21
-# @describe :
+# @describe : 信业帮（信贷多多）后台项目
 
-from interface.base.requests import Base_requests
 from interface.base.caps import Caps
+from interface.base.requests import Base_requests
 
 
 class userInfo_pro:
@@ -16,13 +16,13 @@ class userInfo_pro:
         self.caps = Caps(env=environment)
 
     # phoneSale/addOrder 电销中心_新增订单
-    def addOrder(self, data, cookies=''):
+    def addOrder(self, data, headers='', cookies=''):
         url = self.caps['admin'] + 'api/v2.0.0/UserInformation/phoneSale/addOrder'
-        res = self.re.post_json(url=url, datas=data, cookies=cookies)
+        res = self.re.post_json(url=url, datas=data, headers=headers, cookies=cookies)
         return res
 
     # 查询订单详情
-    def orderList(self, datas, cookies):
+    def orderList(self, datas, headers='', cookies=''):
         url = self.caps['admin'] + 'api/v2.0.0/UserInformation/order/OrderList'
-        res = self.re.post_json(url=url, datas=datas, cookies=cookies)
+        res = self.re.post_json(url=url, datas=datas, headers=headers, cookies=cookies)
         return res

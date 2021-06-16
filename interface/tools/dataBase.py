@@ -5,10 +5,12 @@
 # @time: 2021/5/27 15:38
 # @describe :
 from sqlite3 import OperationalError
+
 import pymysql
 
 
 class DataBase:
+
     def __init__(self, host='', port='', user='', password=''):
         if host == '' and port == '' and user == '' and password == '':
             # 测试环境

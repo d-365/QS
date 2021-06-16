@@ -6,9 +6,11 @@
 # @describe :
 
 # 好单多多新增订单需传入订单数据
+from random import randint
+
+
 def addOrder_data(phone='', city_name=''):
     """
-
     :param phone: 传入手机号
     :param city_name: 借款城市
     :return:
@@ -153,10 +155,10 @@ def addOrder_data(phone='', city_name=''):
         2: '银行代发',
         3: None
     }
-
+    loan_money = randint(3, 10)
     payload = {
         "realname": "接口生成", "age": 48, "sex": sex['1'],
-        "loan_money": "3", "loan_time": 12, "loan_goal": loan_goal[0],
+        "loan_money": loan_money, "loan_time": 12, "loan_goal": loan_goal[0],
         "loan_id_name": loan_id_name['自由职业'], "city_name": city_name,
         "provident_fund": provident_fund["无本地公积金"], "social_security": social_security["连续6个月"],
         "credit_money": credit_money['20000元'], "credit_record": credit_record['无信用卡或贷款'],
