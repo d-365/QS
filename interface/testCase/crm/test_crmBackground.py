@@ -7,7 +7,7 @@
 
 class Test_crmBack:
 
-    def test_case(self, crm_manage):
+    def test_case1(self,crmManege):
         print('hello')
 
     def test_case2(self):
