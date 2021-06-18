@@ -163,7 +163,7 @@ def addOrder_data(phone='', city_name=''):
         "provident_fund": provident_fund["无本地公积金"], "social_security": social_security["连续6个月"],
         "credit_money": credit_money['20000元'], "credit_record": credit_record['无信用卡或贷款'],
         "is_wld": is_wld[1], "wld_data": {"wld_money": 30000}, "is_zmf": is_zmf[0], "zmf": "0",
-        "lnsurance": "无", "lnsurance_name": "", "lnsurance_value": "",
+        "lnsurance": "投保人寿险且投保两年以下", "lnsurance_name": "中国平安", "lnsurance_value": "5万元以下",
         "workunit": "轻山", "workage": "3个月以下",
         "money": money["10000元"], "income_type": income_type[3],
         "loan": {"money": money["10000元"], "income_type": income_type[3]},
@@ -178,4 +178,54 @@ def addOrder_data(phone='', city_name=''):
         "loan_id": "0", "phone": phone
     }
 
+    return payload
+
+
+def order_data(city_name):
+    payload = {
+        "loan_money": "50",
+        "loan_time": 6,
+        "loan_goal": "消费贷款",
+        "loan_id_name": "上班族",
+        "education": "本科及以上",
+        "workunit": "测试",
+        "money": "2000元",
+        "income_type": "转账工资",
+        "workage": "3个月-6个月",
+        "license": "",
+        "year": "",
+        "warter_money": "",
+        "social_security": "3个月以下",
+        "provident_fund": "3个月以下",
+        "is_house": "有房产，接受抵押",
+        "house_type": "按揭房",
+        "house_money": "50万-100万",
+        "is_car": "有车，不接受抵押",
+        "car_money": "10万以下",
+        "credit_money": "3000元以下",
+        "is_wld": "有",
+        "wld_money": 500,
+        "is_zmf": "有",
+        "zmf": "500",
+        "credit_record": "无信用卡或贷款",
+        "lnsurance": "投保人寿险且投保两年以上",
+        "lnsurance_name": "安邦保险",
+        "lnsurance_value": "10万元以上",
+        "city_name": city_name,
+        "loan_id": 0,
+        "car_data": {
+            "car_money": "10万以下"
+        },
+        "house_data": {
+            "house_money": "50万-100万",
+            "house_type": "按揭房"
+        },
+        "loan": {
+            "money": "2000元",
+            "income_type": "转账工资"
+        },
+        "wld_data": {
+            "wld_money": 500
+        }
+    }
     return payload

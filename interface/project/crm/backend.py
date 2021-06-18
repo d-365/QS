@@ -79,3 +79,57 @@ class backend_pro:
         url = self.caps['crm_admin'] + 'api/backend/crmUser/userList'
         res = self.re.post_json(url=url, datas=datas, headers=headers)
         return res
+
+    # 多融客CRM-广告管理-更新广告状态
+    def editAdIsOpen(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/ad/editAdIsOpen'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 多融客CRM-广告管理-查看广告详情
+    def adDateil(self, headers, params):
+        url = self.caps['crm'] + 'api/crm/ad/adDateil'
+        res = self.re.Get(url=url, headers=headers, params=params)
+        return res
+
+    # 多融客CRM - 交易记录 - 交易记录列表
+    def tradeList(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/adTrade/tradeList'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 多融客-客户管理-客户列表
+    def customerList(self, headers, datas=''):
+        url = self.caps['crm'] + 'api/crm/customer/customerList'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 多融客 - 客户管理 - 导出客户列表
+    def exportCustomer(self, params, headers):
+        url = self.caps['crm'] + 'api/crm/customer/exportCustomer'
+        res = self.re.Get(url=url, headers=headers, params=params)
+        return res
+
+    # 多融客-客户管理-客户跟进列表
+    def followList(self, params, headers):
+        url = self.caps['crm'] + 'api/crm/follow/followList'
+        res = self.re.Get(url=url, headers=headers, params=params)
+        return res
+
+    # 多融客 - 客户管理- 删除客户
+    def deleteCustomer(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/customer/deleteCustomer'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 多融客-客户管理-新建跟进
+    def addFollow(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/follow/addFollow'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 多融客CRM-广告管理-广告列表
+    def getAdListByName(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/ad/getAdListByName'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res

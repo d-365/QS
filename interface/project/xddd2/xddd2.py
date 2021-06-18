@@ -15,9 +15,9 @@ class xddd_pro:
         self.caps = Caps(env=environment)
 
     # 验证码登录
-    def xddd2_login(self, params):
+    def xddd2_login(self, headers,params):
         url = self.caps['xddd2'] + 'interface/v3.0.0/beforeUser/res'
-        res = self.re.get(url=url, params=params)
+        res = self.re.get(url=url,headers=headers, params=params)
         return res
 
     # 密码登录
@@ -25,3 +25,23 @@ class xddd_pro:
         url = self.caps['xddd2'] + 'interface/v4.1.0/beforeUser/pRes'
         res = self.re.post_app(url=url, datas=datas)
         return res
+
+    # 好单客源列表
+    def orderList(self, headers, params):
+        url = self.caps['xddd2'] + 'interface/v3.0.0/order/list'
+        res = self.re.get(url=url, headers=headers, params=params)
+        return res
+
+    # 更新展位状态
+    def changeStatus(self,headers,datas):
+        url = self.caps['xddd2'] + 'interface/v3.0.0/ddzw/ddzwinfo/changeStatus'
+        res = self.re.post_app(url=url,headers=headers,datas=datas)
+        return res
+
+    # 查询展位订单
+    def catchOrderList(self,headers,datas):
+        url = self.caps['xddd2'] + 'interface/v3.0.0/ddzw/ddzwinfo/catchOrderList'
+        res = self.re.post(url=url,headers=headers,data=datas)
+        return res
+
+

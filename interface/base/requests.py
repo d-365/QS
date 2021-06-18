@@ -6,7 +6,6 @@
 # @describe : requests方法封装
 
 import json
-
 import requests
 
 
@@ -80,6 +79,7 @@ class Base_requests:
         return cookie
 
     @staticmethod
-    def put(url, headers='', ):
-        response = requests.put(url=url, headers=headers)
+    def put_json(url, headers='',datas=''):
+        data_json = json.dumps(datas)
+        response = requests.put(url=url, headers=headers,data=data_json)
         return response.json()

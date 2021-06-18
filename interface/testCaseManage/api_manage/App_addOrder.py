@@ -13,37 +13,28 @@ from interface.tools.dataBase import DataBase
 
 class addOrder:
 
-    def __init__(self):
+    def __init__(self, env='',phone=''):
         self.database = DataBase()
-        self.api = api_pro()
-        self.jdf = jdf_pro()
+        self.api = api_pro(environment=env)
+        self.jdf = jdf_pro(environment=env)
         self.token = ''
-        self.phone = ''
-
-    def test_sql(self, phone):
-        # 重置信贷多多后台用户登录验证码
+        # 重置信业帮App用户登录验证码
         sql = "UPDATE jgq.think_sms SET STATUS=0 WHERE phone = %s;" % phone
         self.database.sql_execute(sql=sql)
         sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % phone
         sql3 = "UPDATE jgq.think_loan SET creat_time = '2021-05-12 14:25:28',update_time = '2021-05-12 14:25:28',create_time_auto = '2021-05-12 14:25:28',update_time_auto = '2021-05-12 14:25:28',idcard = 411324199907100550 WHERE phone = %s ; " % phone
         self.database.sql_execute(sql3)
-
-    # app登录
-    def app_login(self, phone):
-        """
-        :param phone: 登录手机号
-        :return:
-        """
         self.phone = phone
+
         payload = {
-            'phone': self.phone,
+            'phone': phone,
             'code': 1234,
             'device_token': 'AhGJMV5mG - XzV1hO8F_9PW - RlCTsvj6_kcr__rACf5ih',
             'isCover': 0
         }
+
         re = self.api.user_login(data=payload)
         self.token = re['data']['token']
-        return self.token
 
     # 信业帮新增订单
     def app_addOrder(self, datas):
@@ -54,7 +45,12 @@ class addOrder:
             'Content-Type': 'application/json'
         }
         re = self.jdf.firstLoan(headers=header, datas=datas)
-        print(re)
+        # 信业帮新增订单_校验
+        payload2 = {
+            "source": 0
+        }
+        res = self.jdf.loanReject(headers=header, datas=payload2)
+        print(self.phone + '  发布线索', res)
 
     # 信业帮新增订单_校验
     def loanReject(self):
@@ -70,33 +66,23 @@ class addOrder:
         re = self.jdf.loanReject(headers=headers, datas=payload)
         print(re)
 
-
-class price_module:
-
-    def __init__(self, phone):
-        self.order = addOrder()
-        self.order.test_sql(phone)
-        self.phone = phone
-
     # 信业帮查询当前线索信息
     def get_loanId(self):
-        token = self.order.app_login(phone=self.phone)
         data = {
             'phone': self.phone,
             'auth': '98ef33',
-            'token': token,
+            'token': self.token,
             'system': 'android'
 
         }
-        res = self.order.api.current_loanList(headers=data)
+        res = self.api.current_loanList(headers=data)
         loanID = res['data']['loan']['id']
-        print(loanID)
+        return loanID
 
 
 if __name__ == "__main__":
-    run = addOrder()
-    run.test_sql('11111111120')
-    run.app_login('11111111120')
+    run = addOrder(phone='11111111119')
     payload = addOrder_data(city_name='杭州市')
     run.app_addOrder(payload)
-    run.loanReject()
+    run.get_loanId()
+
