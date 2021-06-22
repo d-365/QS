@@ -99,6 +99,7 @@ class xdd2_manage:
             'status': status
         }
         res = self.xddd2.changeStatus(headers=self.headers_data, datas=payload)
+        print('更新展位状态',res)
         return res
 
     # 查询展位订单
@@ -113,4 +114,4 @@ class xdd2_manage:
 
 if __name__ == "__main__":
     run = xdd2_manage('13003672511')
-    run.orderList(520400)
+    run.changeStatus(1688,status=2)

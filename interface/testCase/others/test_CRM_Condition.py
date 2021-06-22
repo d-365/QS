@@ -7,19 +7,6 @@
 
 class Test_CRM:
 
-    def test_case1(self, order):
-        payload = {"city_name": "杭州市", "loan_money": "6", "loan_time": 1, "loan_goal": "未知", "loan_id_name": "上班族",
-                   "education": "大专",
-                   "workunit": "未知", "money": "10000元以上", "income_type": "转账工资", "workage": "3个月以下", "license": "",
-                   "year": "", "warter_money": "", "social_security": "连续6个月", "provident_fund": "连续6个月",
-                   "is_house": "有房产，接受抵押", "house_type": "未知", "house_money": "未知", "is_car": "有车，不接受抵押",
-                   "car_money": "10万以下", "credit_money": "3000元以下", "is_wld": "无", "wld_money": 900, "is_zmf": "无",
-                   "zmf": "", "credit_record": "1年内逾期超过3次或者90天", "lnsurance": "投保人寿险且投保两年以下", "lnsurance_name": "未知",
-                   "lnsurance_value": "未知", "loan_id": 0, "car_data": {"car_money": "10万以下"},
-                   "house_data": {"house_money": "未知", "house_type": "未知"},
-                   "loan": {"money": "10000元以上", "income_type": "转账工资"}, "wld_data": {"wld_money": ''}}
-        order.app_addOrder(datas=payload)
-
     def test_case2(self, order):
         payload = {
             "city_name": "安顺市",
@@ -67,4 +54,6 @@ class Test_CRM:
                 "wld_money": 500
             }
         }
-        order.app_addOrder(datas=payload)
+        res = order.app_addOrder(datas=payload)
+        print(res)
+        input("press any key to exit!")

@@ -133,3 +133,15 @@ class backend_pro:
         url = self.caps['crm'] + 'api/crm/ad/getAdListByName'
         res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res
+
+    # 多融客-更新广告
+    def editAd(self,headers,datas):
+        url = self.caps['crm'] + 'api/crm/ad/editAd'
+        res = self.re.post_json(url=url,headers=headers,datas=datas)
+        return res
+
+    # 根据公司查询账户余额
+    def getCompanyMoney(self,headers,datas):
+        url = self.caps['crm'] + 'api/backend/adTrade/getCompanyMoney'
+        res = self.re.Get(url=url, headers=headers, params=datas)
+        return res

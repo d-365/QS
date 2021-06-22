@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/6/7 10:49
 # @Author  : dujun
-# @File    : test_crmBackground.py
+# @File    : test_crmProcess.py
 # @describe:
 
 from interface.data.CRM_Account import username, account
@@ -31,7 +31,7 @@ class crm_manage:
                    "putCity": "安顺市",
                    "status": 1, "requirement": {}, "noRequirement": {}, "id": ID}
         re = self.crm.updateAdvertising(headers=self.headers, datas=payload)
-        print(re)
+        print('CRM广告列表_修改广告', re)
         return re
 
     # 截单_待分配列表
@@ -40,7 +40,7 @@ class crm_manage:
             'token': self.token
         }
         re = self.crm.undistributed(headers=header_data)
-        print(re)
+        print('截单_待分配列表', re)
         # ID = re['data']['records'][0]['id']
         # return ID
 
@@ -52,8 +52,7 @@ class crm_manage:
         payload = {
             "thinkLoanId": thinkLoanId
         }
-        re = self.crm.chargeBack(headers=self.headers, datas=payload)
-        print(re)
+        self.crm.chargeBack(headers=self.headers, datas=payload)
 
     # 待分配列表-查询按钮状态(截单按钮)
     def getStatus(self):
@@ -64,20 +63,20 @@ class crm_manage:
         return res
 
     # crm添加广告
-    def addAdvertising(self):
-        payload = {
-            "companyName": "dujun_gs_001",  # 公司名称
-            "advertisingName": "interface",  # 广告名称
-            "electricalStatus": 1,  # 是否电核 1:电核 0:非电核
-            "putCity": "安顺市",  # 城市
-            "status": 1,  # 是否启用 1:启用  0:禁用
-            "requirement": {  # 必要条件
-            },
-            "noRequirement": {  # 非必要条件
-            }
-        }
-        res = self.crm.addAdvertising(headers=self.headers, datas=payload)
-        print(res)
+    def addAdvertising(self, payload):
+        # payload = {
+        #     "companyName": '',  # 公司名称
+        #     "advertisingName": 'advertisingName',  # 广告名称
+        #     "electricalStatus": 'electricalStatus',  # 是否电核 1:电核 0:非电核
+        #     "putCity": 'putCity',  # 城市
+        #     "status": 'status',  # 是否启用 1:启用  0:禁用
+        #     "suggestedPrice": 建议出价
+        #     "requirement": {
+        #     },
+        #     "noRequirement": {
+        #     }
+        # }
+        self.crm.addAdvertising(headers=self.headers, datas=payload)
 
     # 更新截单按钮状态
     def cutStatus(self, status):
@@ -91,12 +90,17 @@ class crm_manage:
         return res
 
     # 查询广告列表
-    def advertisingList(self, electricalStatus=''):
+    def advertisingList(self, companyName='', advertisingName='', electricalStatus=None):
         """
+        :param advertisingName: 广告名称
+        :param companyName: 公司名称
         :param electricalStatus: 是否电核 0 非电核  1：电核
         """
         payload = {
-            'electricalStatus': electricalStatus
+            'electricalStatus': electricalStatus,
+            'companyName': companyName,
+            'advertisingName': advertisingName,
+
         }
         res = self.crm.advertisingList(headers=self.headers, params=payload)
         advertList = res['data']['records']
@@ -110,7 +114,27 @@ class crm_manage:
         res = self.crm.setOrder(headers=self.headers, datas=payload)
         return res
 
+    # CRM-充值-余额
+    def recharge(self, companyName, threadMoney):
+        payload = {
+            "companyName": companyName,
+            "threadMoney": threadMoney
+        }
+        res = self.crm.recharge(headers=self.headers, datas=payload)
+        return res
+
+    # CRM-退款-余额
+    def refund(self, companyName, threadMoney):
+        payload = {
+            "companyName": companyName,
+            "threadMoney": threadMoney
+        }
+        res = self.crm.refund(headers=self.headers, datas=payload)
+        return res
+
 
 if __name__ == "__main__":
     run = crm_manage(username['管理员'], env='')
-    run.addAdvertising()
+    # datas = {"companyName":"dujun_gs_001","advertisingName":"interface_no","electricalStatus":0,"putCity":"安顺市","status":1,"requirement":{},"noRequirement":{}}
+    # run.addAdvertising(datas)
+    run.chargeBack(10518)

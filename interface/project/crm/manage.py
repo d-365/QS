@@ -69,7 +69,19 @@ class crm_pro:
         return res
 
     # 待分配列表--置位电核单
-    def setOrder(self,headers,datas):
+    def setOrder(self, headers, datas):
         url = self.caps['crm'] + 'api/crm/advertising/setOrder'
-        res = self.re.post_json(url=url,headers=headers,datas=datas)
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # CRM-充值-余额
+    def recharge(self, headers, datas):
+        url = self.caps['crm'] + 'api/backend/adTrade/recharge'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # CRM-退款-余额
+    def refund(self, headers, datas):
+        url = self.caps['crm'] + 'api/backend/adTrade/refund'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res

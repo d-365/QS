@@ -26,10 +26,11 @@ def crmManege(cmdOption):
 # 多融客后台
 @pytest.fixture(scope='session')
 def crmAdmin(cmdOption):
-    backend = crm_admin(env=cmdOption, loginName=username['dujun_gs'])
+    backend = crm_admin(env=cmdOption, loginName=username['interface_gs_manage'])
     return backend
 
 
+# 数据库
 @pytest.fixture(scope='session')
 def mysql():
     database = DataBase()
@@ -37,14 +38,14 @@ def mysql():
 
 
 # 信业帮App
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def appAddOrder(cmdOption):
-    app_order = addOrder(env=cmdOption,phone='11111111119')
+    app_order = addOrder(env=cmdOption, phone='11111111119')
     return app_order
 
 
 # 好单多多App
 @pytest.fixture(scope='session')
 def appXdd2(cmdOption):
-    xdd2_res = xdd2_manage(env=cmdOption,phone='13003672511')
+    xdd2_res = xdd2_manage(env=cmdOption, phone='13003672511')
     return xdd2_res

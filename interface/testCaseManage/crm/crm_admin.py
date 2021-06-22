@@ -97,10 +97,10 @@ class crm_admin:
         return res
 
     # 系统设置-员工账号-编辑（新增、更新）员工信息
-    def editStaff(self, account, name, password, role, status, ID=''):
+    def editStaff(self, accounts, name, password, role, status, ID=''):
         """
         系统设置-员工账号-编辑（新增、更新）员工信息
-        :param account: 账号
+        :param accounts: 账号
         :param name: 姓名
         :param password: 密码
         :param role: 角色id
@@ -108,7 +108,7 @@ class crm_admin:
         :param ID: 账户id,当更新操作必须传id
         """
         payload = {
-            'account': account,
+            'account': accounts,
             'name': name,
             'password': password,
             'role': role,
@@ -198,7 +198,6 @@ class crm_admin:
             'isOpen': isOpen
         }
         res = self.backend.editAdIsOpen(datas=payload, headers=self.headers)
-        print(res)
         return res
 
     # 多融客CRM-广告管理-查看广告详情
@@ -231,15 +230,20 @@ class crm_admin:
         return res
 
     # 多融客-客户管理-客户列表
-    def customerList(self, adName):
+    def customerList(self, adName='',phone=''):
         """
         adName: 广告名称--非必填
         """
         payload = {
-            'adName': adName
+            'adName': adName,
+            'pageSize':10,
+            'pageNum':1,
+            'phone':phone,
         }
         res = self.backend.customerList(datas=payload, headers=self.headers)
-        return res
+        clientList = res['data']['records']
+        print('多融客-客户管理-客户列表',clientList)
+        return clientList
 
     # 多融客-客户管理-导出客户列表
     def exportCustomer(self):
@@ -317,7 +321,37 @@ class crm_admin:
         print(res)
         return res
 
+    def editAd(self,ID,budgetConfig,cpcPrice):
+        """
+        :param ID: 广告ID
+        :param budgetConfig: 每日预算
+        :param cpcPrice: CPC出价
+        :return:
+        """
+        payload = {
+            'id':ID,
+            'budgetConfig':budgetConfig,
+            'cpcPrice':cpcPrice
+
+        }
+        res = self.backend.editAd(headers=self.headers, datas=payload)
+        print(res)
+        return res
+
+    # 根据公司查询账户余额
+    def getCompanyMoney(self,companyName):
+        payload = {
+            'companyName':companyName,
+            'token': self.token
+        }
+        headers = {
+            'token': self.token
+        }
+        res = self.backend.getCompanyMoney(headers=headers, datas=payload)
+        print(res)
+        return res
+
 
 if __name__ == "__main__":
-    run = crm_admin(env='', loginName=username['dujun_gs'])
-    run.editAdIsOpen('',isOpen='false')
+    run = crm_admin(env='', loginName=username['interface_gs_manage'])
+    run.getCompanyMoney(companyName='dujun_gs_001')

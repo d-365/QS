@@ -11,7 +11,7 @@ username = {
     '客户经理': 'khjl_interface',
     '电核主管': 'dhzg_interface',
     '电核专员': 'dhzy_interface',
-    'dujun_gs': 'dujun_gs'
+    'interface_gs_manage': 'interface_gs_manage',
 }
 
 
