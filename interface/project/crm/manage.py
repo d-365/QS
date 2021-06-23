@@ -85,3 +85,9 @@ class crm_pro:
         url = self.caps['crm'] + 'api/backend/adTrade/refund'
         res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res
+
+    # CRM-推送订单
+    def push(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/loan/order/push'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res

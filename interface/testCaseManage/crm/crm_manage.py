@@ -132,9 +132,25 @@ class crm_manage:
         res = self.crm.refund(headers=self.headers, datas=payload)
         return res
 
+    # CRM-推送订单
+    def push(self, advertisingId, thinkLoanId,companyName):
+        """
+        :param advertisingId: 广告ID
+        :param thinkLoanId: 线索ID
+        :param companyName: 公司名称
+        :return:
+        """
+        payload = {
+            'advertisingId': advertisingId,
+            'thinkLoanId': thinkLoanId,
+            'companyName': companyName
+
+        }
+        res = self.crm.push(headers=self.headers, datas=payload)
+        print('推送广告',res)
+        return res
+
 
 if __name__ == "__main__":
     run = crm_manage(username['管理员'], env='')
-    # datas = {"companyName":"dujun_gs_001","advertisingName":"interface_no","electricalStatus":0,"putCity":"安顺市","status":1,"requirement":{},"noRequirement":{}}
-    # run.addAdvertising(datas)
-    run.chargeBack(10518)
+    run.push(advertisingId='71',thinkLoanId='10529',companyName='dujun_gs_001')

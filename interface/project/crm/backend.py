@@ -140,8 +140,15 @@ class backend_pro:
         res = self.re.post_json(url=url,headers=headers,datas=datas)
         return res
 
-    # 根据公司查询账户余额
-    def getCompanyMoney(self,headers,datas):
-        url = self.caps['crm'] + 'api/backend/adTrade/getCompanyMoney'
-        res = self.re.Get(url=url, headers=headers, params=datas)
+    # 账户总览
+    def detail(self,headers):
+        url = self.caps['crm'] + 'api/crm/account/detail'
+        res = self.re.Get(url=url, headers=headers)
         return res
+
+    # 修改账户日预算
+    def update(self,headers,datas):
+        url = self.caps['crm'] + 'api/crm/account/update'
+        res = self.re.put_json(url=url, headers=headers,datas=datas)
+        return res
+

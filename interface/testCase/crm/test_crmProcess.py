@@ -143,8 +143,8 @@ class Test_closeCut:
                                                     electricalStatus=0)
             advert_id = advert_list[0]['id']
             crmAdmin.editAd(ID=advert_id, budgetConfig=None, cpcPrice=25)
-        with allure.step('查询线索余量，不足进行充值'):
-            pass
+        with allure.step('修改账户日预算为不限制'):
+            crmAdmin.update(None)
         with allure.step('信业帮发起线索请求'):
             payload = order_data(city_name='安顺市')
             appAddOrder.app_addOrder(payload)
@@ -176,7 +176,7 @@ class Test_openCut:
         mysql.sql_execute(sql)
 
     @pytest.fixture(scope='class')
-    def setup_class(self, crmManege, appAddOrder, crmAdmin):
+    def setup_class(self, crmManege, crmAdmin):
         """
         1：开启截单按钮 2：新增需电核广告
         :return: 广告ID
@@ -239,7 +239,7 @@ class Test_openCut:
                 raise Exception("订单不在好单客源中")
 
     @allure.story('开启截单,符合需电核的广告--->推送对应广告')
-    def test_case2(self, appAddOrder, setup_class, crmAdmin):
+    def test_case2(self, appAddOrder, setup_class, crmAdmin, crmManege):
         """
         线索推送对应需电核广告
         需电核广告断言
@@ -251,17 +251,22 @@ class Test_openCut:
             # 线索ID
             loanId = appAddOrder.get_loanId()
         with allure.step("对应线索推送给符合条件广告"):
-            pass
+            crmAdmin.update(None)
+            crmManege.push(advertisingId=setup_class, thinkLoanId=loanId, companyName='dujun_gs_001')
         with allure.step('查询对应广告下是否存在此订单'):
             clientList = crmAdmin.customerList(adName='interface_yes')
             i = 0
+            status = False
             while i < len(clientList):
                 if loanId == clientList[i]['id']:
+                    status = True
                     break
-                elif i < len(clientList):
-                    i += 1
                 else:
-                    raise Exception("线索" + loanId + "不在interface_yes广告中")
+                    i += 1
+            if status is True:
+                print('-----------------------开启截单,推送需电核的广告---->多融客-------------------------')
+            else:
+                raise Exception("线索" + loanId + "不在interface_yes广告中")
 
     @allure.story('开启截单,符合需电核的广告----退还订单---->好单客源')
     def test_case3(self, appAddOrder, setup_class, crmAdmin, mysql, crmManege, appXdd2):
@@ -388,7 +393,7 @@ class Test_priceLogic_callBack:
         mysql.sql_execute(sql)
 
     @pytest.fixture(scope='class')
-    def setup_class(self, crmManege, appAddOrder, crmAdmin):
+    def setup_class(self, crmManege, crmAdmin):
         """
         1：开启截单按钮 2：新增需电核广告
         :return: 广告ID
@@ -412,11 +417,10 @@ class Test_priceLogic_callBack:
                                                     electricalStatus=1)
             # 广告ID
             advert_id = advert_list[0]['id']
-            # crmAdmin.editAd(ID=advert_id, budgetConfig=None, cpcPrice=25)
         return advert_id
 
     @allure.story("对应广告的CPC出价小于建议出价")
-    def test_case1(self, setup_class, crmAdmin, appAddOrder):
+    def test_case1(self, setup_class, crmAdmin, appAddOrder,crmManege):
         with allure.step('多融客修改对应广告信息'):
             crmAdmin.editAd(ID=setup_class, budgetConfig=None, cpcPrice=1)
         # 信业帮发起线索
@@ -426,10 +430,10 @@ class Test_priceLogic_callBack:
             # 线索ID
             loanId = appAddOrder.get_loanId()
         with allure.step('线索推送给对应广告'):
-            pass
+            pushRes = crmManege.push(advertisingId=setup_class, thinkLoanId=loanId, companyName='dujun_gs_001')
 
     @allure.story("账户余额小于CPC出价 ")
-    def test_case2(self, setup_class, crmAdmin, appAddOrder,crmManege):
+    def test_case2(self, setup_class, crmAdmin, appAddOrder, crmManege):
         cpcPrice = 25
         with allure.step('多融客修改对应广告信息【CPC大于 建议出价】'):
             crmAdmin.editAd(ID=setup_class, budgetConfig=None, cpcPrice=cpcPrice)
@@ -441,17 +445,19 @@ class Test_priceLogic_callBack:
             loanId = appAddOrder.get_loanId()
 
         with allure.step('查询修改账户余额【小于CPC出价25】'):
-            companyMoney = crmAdmin.getCompanyMoney('dujun_gs_001')
-            if companyMoney - cpcPrice >= 1:
-                crmManege.refund(companyMoney - cpcPrice)
+            companyMoney = crmAdmin.detail()['data']['money']
+            if companyMoney - cpcPrice >= 0:
+                crmManege.refund(companyMoney - (cpcPrice + 1))
 
         with allure.step('线索推送给对应广告'):
-            pass
+            pushRes = crmManege.push(advertisingId=setup_class, thinkLoanId=loanId, companyName='dujun_gs_001')
+            print(pushRes)
 
     @allure.story("账户剩余日预算小于对应广告CPC出价")
-    def test_case3(self, setup_class, crmAdmin, appAddOrder):
+    def test_case3(self, setup_class, crmAdmin, appAddOrder, crmManege):
+        cpcPrice = 25
         with allure.step('多融客修改对应广告信息【CPC大于 建议出价】'):
-            crmAdmin.editAd(ID=setup_class, budgetConfig=None, cpcPrice=25)
+            crmAdmin.editAd(ID=setup_class, budgetConfig=None, cpcPrice=cpcPrice)
         # 信业帮发起线索
         with allure.step('信业帮发起线索请求'):
             payload = order_data(city_name='安顺市')
@@ -460,16 +466,19 @@ class Test_priceLogic_callBack:
             loanId = appAddOrder.get_loanId()
 
         with allure.step('查询修改账户余额【大于CPC出价25】'):
-            pass
+            companyMoney = crmAdmin.detail()['data']['money']
+            if companyMoney < cpcPrice:
+                crmManege.recharge(cpcPrice)
         with allure.step('查询修改账户日预算【小于CPC出价25】'):
-            pass
+            crmAdmin.update(cpcPrice - 5)
         with allure.step('线索推送给对应广告'):
-            pass
+            pushRes = crmManege.push(advertisingId=setup_class, thinkLoanId=loanId, companyName='dujun_gs_001')
 
     @allure.story("对应广告剩余日预算 小于广告CPC出价")
-    def test_case4(self, setup_class, crmAdmin, appAddOrder):
+    def test_case4(self, setup_class, crmAdmin, appAddOrder, crmManege):
+        cpcPrice = 25
         with allure.step('多融客修改对应广告信息【CPC大于 建议出价】'):
-            crmAdmin.editAd(ID=setup_class, budgetConfig=None, cpcPrice=25)
+            crmAdmin.editAd(ID=setup_class, budgetConfig=None, cpcPrice=cpcPrice)
         # 信业帮发起线索
         with allure.step('信业帮发起线索请求'):
             payload = order_data(city_name='安顺市')
@@ -478,22 +487,25 @@ class Test_priceLogic_callBack:
             loanId = appAddOrder.get_loanId()
 
         with allure.step('查询修改账户余额【大于CPC出价25】'):
-            pass
+            companyMoney = crmAdmin.detail()['data']['money']
+            if companyMoney < cpcPrice:
+                crmManege.recharge(cpcPrice)
         with allure.step('查询修改账户剩余日预算【大于CPC出价25】'):
-            pass
+            crmAdmin.update(None)
         with allure.step('查询修改广告日预算【小于CPC出价25】'):
-            crmAdmin.editAd(ID=setup_class, budgetConfig=15, cpcPrice=25)
+            crmAdmin.editAd(ID=setup_class, budgetConfig=cpcPrice - 5, cpcPrice=cpcPrice)
         with allure.step('线索推送给对应广告'):
-            pass
+            pushRes = crmManege.push(advertisingId=setup_class, thinkLoanId=loanId, companyName='dujun_gs_001')
 
     @allure.story("条件均符合,可正常推送广告")
-    def test_case5(self, setup_class, crmAdmin, appAddOrder):
+    def test_case5(self, setup_class, crmAdmin, appAddOrder, crmManege):
         """
         广告CPC出价 大于 建议出价
         账户余额大于CPC出价
         账户剩余日预算大于 CPC出价
         广告剩余日预算大于CPC出价
         """
+        cpcPrice = 25
         # 信业帮发起线索
         with allure.step('信业帮发起线索请求'):
             payload = order_data(city_name='安顺市')
@@ -501,12 +513,28 @@ class Test_priceLogic_callBack:
             # 线索ID
             loanId = appAddOrder.get_loanId()
         with allure.step('多融客修改对应广告信息【CPC大于 建议出价】'):
-            crmAdmin.editAd(ID=setup_class, budgetConfig=None, cpcPrice=25)
+            crmAdmin.editAd(ID=setup_class, budgetConfig=None, cpcPrice=cpcPrice)
         with allure.step('查询修改账户余额【大于CPC出价25】'):
-            pass
+            companyMoney = crmAdmin.detail()['data']['money']
+            if companyMoney < cpcPrice:
+                crmManege.recharge(cpcPrice)
         with allure.step('查询修改账户剩余日预算【大于CPC出价25】'):
-            pass
+            crmAdmin.update(None)
         with allure.step('查询修改广告日预算【大于CPC出价25】'):
-            crmAdmin.editAd(ID=setup_class, budgetConfig=15, cpcPrice=25)
+            crmAdmin.editAd(ID=setup_class, budgetConfig=None, cpcPrice=cpcPrice)
         with allure.step('线索推送给对应广告'):
-            pass
+            pushRes = crmManege.push(advertisingId=setup_class, thinkLoanId=loanId, companyName='dujun_gs_001')
+            clientList = crmAdmin.customerList(adName='interface_yes')
+            i = 0
+            status = False
+            while i < len(clientList):
+                if loanId == clientList[i]['id']:
+                    status = True
+                    break
+                else:
+                    i += 1
+            if status is True:
+                print('-----------------------开启截单,推送需电核的广告---->多融客-------------------------')
+            else:
+                raise Exception("线索" + loanId + "不在interface_yes广告中")
+

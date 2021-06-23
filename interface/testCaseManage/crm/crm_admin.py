@@ -230,19 +230,19 @@ class crm_admin:
         return res
 
     # 多融客-客户管理-客户列表
-    def customerList(self, adName='',phone=''):
+    def customerList(self, adName='', phone=''):
         """
         adName: 广告名称--非必填
         """
         payload = {
             'adName': adName,
-            'pageSize':10,
-            'pageNum':1,
-            'phone':phone,
+            'pageSize': 10,
+            'pageNum': 1,
+            'phone': phone,
         }
         res = self.backend.customerList(datas=payload, headers=self.headers)
         clientList = res['data']['records']
-        print('多融客-客户管理-客户列表',clientList)
+        print('多融客-客户管理-客户列表', clientList)
         return clientList
 
     # 多融客-客户管理-导出客户列表
@@ -321,7 +321,8 @@ class crm_admin:
         print(res)
         return res
 
-    def editAd(self,ID,budgetConfig,cpcPrice):
+    # 多融客，修改广告信息
+    def editAd(self, ID, budgetConfig, cpcPrice):
         """
         :param ID: 广告ID
         :param budgetConfig: 每日预算
@@ -329,29 +330,37 @@ class crm_admin:
         :return:
         """
         payload = {
-            'id':ID,
-            'budgetConfig':budgetConfig,
-            'cpcPrice':cpcPrice
+            'id': ID,
+            'budgetConfig': budgetConfig,
+            'cpcPrice': cpcPrice
 
         }
         res = self.backend.editAd(headers=self.headers, datas=payload)
-        print(res)
+        print('多融客，修改广告信息',res)
         return res
 
-    # 根据公司查询账户余额
-    def getCompanyMoney(self,companyName):
-        payload = {
-            'companyName':companyName,
-            'token': self.token
-        }
+    # 账户总览
+    def detail(self):
         headers = {
             'token': self.token
         }
-        res = self.backend.getCompanyMoney(headers=headers, datas=payload)
-        print(res)
+        res = self.backend.detail(headers=headers)
+        return res
+
+    # 修改账户日预算
+    def update(self,dayBudget):
+        """
+        :param dayBudget: 日预算
+        :return:
+        """
+        payload = {
+            'dayBudget':dayBudget
+        }
+        res = self.backend.update(headers=self.headers, datas=payload)
         return res
 
 
 if __name__ == "__main__":
-    run = crm_admin(env='', loginName=username['interface_gs_manage'])
-    run.getCompanyMoney(companyName='dujun_gs_001')
+    run = crm_admin(env='', loginName='interface_gs_manage')
+    run.update(None)
+
