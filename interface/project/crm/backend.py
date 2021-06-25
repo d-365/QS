@@ -151,4 +151,3 @@ class backend_pro:
         url = self.caps['crm'] + 'api/crm/account/update'
         res = self.re.put_json(url=url, headers=headers,datas=datas)
         return res
-

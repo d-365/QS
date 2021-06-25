@@ -13,7 +13,7 @@ from interface.tools.dataBase import DataBase
 
 class addOrder:
 
-    def __init__(self, env='',phone=''):
+    def __init__(self, env='', phone=''):
         self.database = DataBase()
         self.api = api_pro(environment=env)
         self.jdf = jdf_pro(environment=env)
@@ -50,7 +50,7 @@ class addOrder:
             "source": 0
         }
         res = self.jdf.loanReject(headers=header, datas=payload2)
-        print(self.phone + '  发布线索', res)
+        print(self.phone + '发布线索:', res, '\n', '用户数据：', datas)
 
     # 信业帮新增订单_校验
     def loanReject(self):
@@ -84,5 +84,4 @@ if __name__ == "__main__":
     run = addOrder(phone='11111111119')
     payload = addOrder_data(city_name='杭州市')
     run.app_addOrder(payload)
-    run.get_loanId()
     input("press any key to exit!")

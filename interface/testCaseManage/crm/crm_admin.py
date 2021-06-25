@@ -285,10 +285,10 @@ class crm_admin:
         :param Id:订单id
         """
         payload = {
-            'id': Id
+            'ids': [Id]
         }
         res = self.backend.deleteCustomer(datas=payload, headers=self.headers)
-        print(res)
+        print("删除客户",res)
         return res
 
     # 多融客 - 客户管理- 新建跟进
@@ -336,7 +336,7 @@ class crm_admin:
 
         }
         res = self.backend.editAd(headers=self.headers, datas=payload)
-        print('多融客，修改广告信息',res)
+        # print('多融客，修改广告信息',res)
         return res
 
     # 账户总览
@@ -361,6 +361,8 @@ class crm_admin:
 
 
 if __name__ == "__main__":
-    run = crm_admin(env='', loginName='interface_gs_manage')
-    run.update(None)
+    run = crm_admin(env='', loginName='ptxs')
+    run.deleteCustomer('10770')
+
+
 

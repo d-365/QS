@@ -21,16 +21,8 @@ class crm_manage:
         }
 
     # CRM广告列表_修改广告
-    def updateAdvertising(self, ID):
-        """
-        :param ID: 广告ID
-        electricalStatus:是否电核 0 不需电核 1需电核
-        status ： 0 禁用  1 启用
-        """
-        payload = {"companyName": "dujun_gs_001", "advertisingName": "interface_01", "electricalStatus": 0,
-                   "putCity": "安顺市",
-                   "status": 1, "requirement": {}, "noRequirement": {}, "id": ID}
-        re = self.crm.updateAdvertising(headers=self.headers, datas=payload)
+    def updateAdvertising(self, datas):
+        re = self.crm.updateAdvertising(headers=self.headers, datas=datas)
         print('CRM广告列表_修改广告', re)
         return re
 
@@ -76,7 +68,8 @@ class crm_manage:
         #     "noRequirement": {
         #     }
         # }
-        self.crm.addAdvertising(headers=self.headers, datas=payload)
+        res = self.crm.addAdvertising(headers=self.headers, datas=payload)
+        return res
 
     # 更新截单按钮状态
     def cutStatus(self, status):
@@ -121,6 +114,7 @@ class crm_manage:
             "threadMoney": threadMoney
         }
         res = self.crm.recharge(headers=self.headers, datas=payload)
+        print('CRM-充值-余额', res)
         return res
 
     # CRM-退款-余额
@@ -130,10 +124,11 @@ class crm_manage:
             "threadMoney": threadMoney
         }
         res = self.crm.refund(headers=self.headers, datas=payload)
+        print('CRM-退款-余额', res)
         return res
 
-    # CRM-推送订单
-    def push(self, advertisingId, thinkLoanId,companyName):
+    # CRM- 线索推送广告
+    def push(self, advertisingId, thinkLoanId, companyName):
         """
         :param advertisingId: 广告ID
         :param thinkLoanId: 线索ID
@@ -147,10 +142,27 @@ class crm_manage:
 
         }
         res = self.crm.push(headers=self.headers, datas=payload)
-        print('推送广告',res)
+        print('CRM- 线索推送广告', res)
+        return res
+
+    # CRM-广告状态
+    def openStatus(self, ID, isOpen):
+        """
+        :param ID: 广告ID
+        :param isOpen: 0：关  1 ：开
+        """
+        payload = {
+            'id': ID,
+            'isOpen': isOpen
+        }
+        res = self.crm.openStatus(headers=self.headers, datas=payload)
         return res
 
 
 if __name__ == "__main__":
     run = crm_manage(username['管理员'], env='')
-    run.push(advertisingId='71',thinkLoanId='10529',companyName='dujun_gs_001')
+    data = {"companyName": "dujun_gs_001", "advertisingName": "int", "electricalStatus": 0,
+            "putCity": "安顺市", "status": 1, "suggestedPrice": 0, "requirement": {},
+            "noRequirement": {}}
+
+    print(run.addAdvertising(data))

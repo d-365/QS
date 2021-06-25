@@ -91,3 +91,9 @@ class crm_pro:
         url = self.caps['crm'] + 'api/crm/loan/order/push'
         res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res
+
+    # CRM-广告状态
+    def openStatus(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/advertising/update/openStatus'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res

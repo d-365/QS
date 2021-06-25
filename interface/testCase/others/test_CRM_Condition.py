@@ -54,6 +54,6 @@ class Test_CRM:
                 "wld_money": 500
             }
         }
-        res = order.app_addOrder(datas=payload)
-        print(res)
-        input("press any key to exit!")
+        order.app_addOrder(datas=payload)
+        loanId = order.get_loanId()
+        print(loanId)
