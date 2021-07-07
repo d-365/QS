@@ -15,7 +15,7 @@ class xdd2_assert:
 
     # 好单客源校验
     def app_source(self, loanId):
-        time.sleep(1.5)
+        time.sleep(2)
         orderList = self.xdd2.orderList(520400)  # 安顺市
         i = 0
         status = False

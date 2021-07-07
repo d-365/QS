@@ -16,6 +16,7 @@ if __name__ == '__main__':
 
     soup = BeautifulSoup(html, 'lxml')
     data = soup.find_all(attrs={'class':'ExploreSpecialCard-title'})
+    print(data)
     for i in range(len(data)):
         print(data[i].get_text())
 

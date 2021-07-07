@@ -349,6 +349,7 @@ class crm_admin:
             'token': self.token
         }
         res = self.backend.detail(headers=headers)
+        # print('账户总览',res)
         return res
 
     # 修改账户日预算
@@ -391,4 +392,4 @@ class crm_admin:
 
 if __name__ == "__main__":
     run = crm_admin(env='', loginName='interface_gs_manage')
-    run.commonCustomerList(adId=45)
+    run.detail()

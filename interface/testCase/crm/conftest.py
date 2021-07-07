@@ -51,12 +51,13 @@ def appXdd2(cmdOption):
     return xdd2_res
 
 
-@pytest.fixture(scope='class', autouse=True)
-def setup(crmManege, mysql):
+@pytest.fixture(scope='class')
+def setup_process(crmManege, mysql):
     """
     1:关闭手动截单按钮，关闭自动截单按钮
     2:关闭所有展位信息（安顺市）
     3:清除自动化产生广告数据
+    4;关闭所有非定制非电核广告
     """
     crmManege.cutStatus1(status=0)
     crmManege.cutStatus2(status=0)
@@ -69,8 +70,12 @@ def setup(crmManege, mysql):
     else:
         print("不存在开启的展位")
 
-    sql = "delete  from crm.crm_advertising WHERE company_name = 'dujun_gs_001' and advertising_name ='interface_no' OR advertising_name ='interface_yes';"
+    sql = "delete  from crm.crm_advertising WHERE company_name = 'dujun_gs_001' and advertising_name ='custom_yes' OR advertising_name ='custom_no' OR advertising_name ='common_no';"
     mysql.sql_execute(sql)
     dataTime = time.strftime('%Y-%m-%d', time.localtime())
     sql2 = "UPDATE jgq.think_xzw_city_ordernum_config SET nums = 100 WHERE city_name = '安顺市' and time = '%s' " % dataTime
     mysql.sql_execute(sql2)
+    advertList = crmManege.advertisingList(electricalStatus='0')
+    for i in range(len(advertList)):
+        advertID = advertList[i]['id']
+        crmManege.openStatus(ID=advertID, isOpen='0')

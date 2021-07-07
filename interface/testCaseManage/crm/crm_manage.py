@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/6/7 10:49
 # @Author  : dujun
-# @File    : test_crmProcess.py
+# @File    : test_price.py
 # @describe:
+import time
 
 from interface.data.CRM_Account import username, account
 from interface.data.order_data import crm_order_data
@@ -58,24 +59,12 @@ class crm_manage:
 
     # crm添加广告
     def addAdvertising(self, payload):
-        # payload = {
-        #     "companyName": '',  # 公司名称
-        #     "advertisingName": 'advertisingName',  # 广告名称
-        #     "electricalStatus": 'electricalStatus',  # 是否电核 1:电核 0:非电核
-        #     "putCity": 'putCity',  # 城市
-        #     "status": 'status',  # 是否启用 1:启用  0:禁用
-        #     "suggestedPrice": 建议出价
-        #     "requirement": {
-        #     },
-        #     "noRequirement": {
-        #     }
-        # }
         res = self.crm.addAdvertising(headers=self.headers, datas=payload)
         print('添加广告', res)
         return res
 
     # 查询广告列表
-    def advertisingList(self, companyName='', advertisingName='', electricalStatus=None):
+    def advertisingList(self, companyName='', advertisingName='', electricalStatus=''):
         """
         :param advertisingName: 广告名称
         :param companyName: 公司名称
@@ -106,7 +95,7 @@ class crm_manage:
             "threadMoney": threadMoney
         }
         res = self.crm.recharge(headers=self.headers, datas=payload)
-        print('CRM-充值-余额', res)
+        # print('CRM-充值-余额', res)
         return res
 
     # CRM-退款-余额
@@ -191,48 +180,111 @@ class crm_manage:
         return res
 
     # 充值明细列表
-    def rechargeList(self, companyName, orderNo, startTime, endTime, pageNum, pageSize):
-        payload = {
-            "companyName": companyName,
-            "orderNo": orderNo,
-            "startTime": startTime,
-            "endTime": endTime,
-            "pageNum": pageNum,
-            "pageSize": pageSize
-        }
+    def rechargeList(self, companyName='', orderNo='', startTime='', endTime=''):
+        startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
+        endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+        if startTime == '' and endTime == '':
+            payload = {
+                "companyName": companyName,
+                "orderNo": orderNo,
+                "startTime": startTime_today,
+                "endTime": endTime_today,
+                "pageNum": 1,
+                "pageSize": 10
+            }
+        else:
+            payload = {
+                "companyName": companyName,
+                "orderNo": orderNo,
+                "startTime": startTime,
+                "endTime": endTime,
+                "pageNum": 1,
+                "pageSize": 10
+            }
         res = self.crm.rechargeList(headers=self.headers, datas=payload)
-        print(res)
-        return res
+        rechargeList = res['data']['records']
+        return rechargeList
 
     # 退款明细列表
-    def refundList(self, companyName, orderNo, startTime, endTime, pageNum, pageSize):
-        payload = {
-            "companyName": companyName,  # 公司名称
-            "orderNo": orderNo,  # 订单号
-            "startTime": startTime,  # 退款时间开始时间
-            "endTime": endTime,  # 退款时间结束时间
-            "pageNum": pageNum,
-            "pageSize": pageSize
-        }
+    def refundList(self, companyName='', orderNo='', startTime='', endTime='', pageNum='', pageSize=''):
+        startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
+        endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+        if startTime == '' and endTime == '':
+            payload = {
+                "companyName": companyName,
+                "orderNo": orderNo,
+                "startTime": startTime_today,
+                "endTime": endTime_today,
+                "pageNum": pageNum,
+                "pageSize": pageSize
+            }
+        else:
+            payload = {
+                "companyName": companyName,
+                "orderNo": orderNo,
+                "startTime": startTime,
+                "endTime": endTime,
+                "pageNum": pageNum,
+                "pageSize": pageSize
+            }
         res = self.crm.refundList(headers=self.headers, datas=payload)
-        print(res)
-        return res
+        refundList = res['data']['records']
+        return refundList
 
-    # 退款明细列表
-    def consumeList(self, companyName, orderNo, startTime, endTime, pageNum, pageSize):
-        payload = {
-            "companyName": companyName,  # 公司名称
-            "orderNo": orderNo,  # 订单号
-            "startTime": startTime,  # 退款时间开始时间
-            "endTime": endTime,  # 退款时间结束时间
-            "pageNum": pageNum,
-            "pageSize": pageSize
-        }
+    #  消耗明细列表
+    def consumeList(self, companyName='',adName='', Id='', startTime='', endTime='', pageNum='', pageSize=''):
+        startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
+        endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+        if startTime == '' and endTime == '':
+            payload = {
+                "companyName": companyName,
+                'adName':adName,
+                "id	": Id,
+                "startTime": startTime_today,
+                "endTime": endTime_today,
+                "pageNum": pageNum,
+                "pageSize": pageSize
+            }
+        else:
+            payload = {
+                "companyName": companyName,
+                'adName': adName,
+                "id	": Id,
+                "startTime": startTime,
+                "endTime": endTime,
+                "pageNum": pageNum,
+                "pageSize": pageSize
+            }
         res = self.crm.consumeList(headers=self.headers, datas=payload)
-        print(res)
-        return res
+        consumeList = res['data']['records']
+        return consumeList
+
+    # CRM管理-交易列表
+    def adTradeList(self, companyName='', startTime='', endTime=''):
+        startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
+        endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+        if startTime == '' and endTime == '':
+            payload = {
+                "companyName": companyName,
+                "startTime": startTime_today,
+                "endTime": endTime_today,
+                "pageNum": 1,
+                "pageSize": 10
+            }
+        else:
+            payload = {
+                "companyName": companyName,
+                "startTime": startTime,
+                "endTime": endTime,
+                "pageNum": 1,
+                "pageSize": 10
+            }
+        res = self.crm.adTradeList(headers=self.headers, datas=payload)
+        rechargeList = res['data']['records']
+        return rechargeList
 
 
 if __name__ == "__main__":
     run = crm_manage(username['管理员'], env='')
-    run.apply(phone='13003672565', cityName='安顺市')
+    run.apply(phone='13003672580',cityName='安顺市')
+

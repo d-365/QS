@@ -52,7 +52,7 @@ class crm_pro:
 
     # CRM管理-交易列表
     def adTradeList(self, headers, datas):
-        url = self.caps['crm'] + 'api/crm/advertising/addAdvertising'
+        url = self.caps['crm'] + 'api/backend/adTrade/adTradeList'
         res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res
 

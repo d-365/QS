@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/6/15 16:31
 # @Author  : dujun
-# @File    : test_crmProcess.py
+# @File    : test_price.py
 # @describe: CRM管理后台
 import time
 import allure

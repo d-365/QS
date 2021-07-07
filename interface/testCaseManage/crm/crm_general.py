@@ -5,7 +5,6 @@
 # @describe: CRM接口自动化常用方法和断言封装
 
 from interface.data.CRM_Account import username
-from interface.testCase.conftest import cmdOption
 from interface.testCaseManage.crm.crm_admin import crm_admin
 from interface.testCaseManage.crm.crm_manage import crm_manage
 
@@ -17,10 +16,10 @@ class crm_general:
         self.crm_admin = crm_admin(env='', loginName='interface_gs_manage')
 
     # CRM添加广告,条件不限制,返回订单ID
-    def addAdvertising(self, Advertising_data):
+    def addAdvertising(self, Advertising_data, advertisingName, electricalStatus, companyName='dujun_gs_001'):
         self.crmManege.addAdvertising(payload=Advertising_data)
-        advert_list = self.crmManege.advertisingList(companyName="dujun_gs_001", advertisingName="interface_yes",
-                                                     electricalStatus=1)
+        advert_list = self.crmManege.advertisingList(companyName=companyName, advertisingName=advertisingName,
+                                                     electricalStatus=electricalStatus)
         # 广告ID
         advert_id = advert_list[0]['id']
         # 设置CPC出价和每日预算
@@ -28,7 +27,7 @@ class crm_general:
         return advert_id
 
     # 断言多融客公海下是否存在指定订单
-    def assert_customList(self,loanId):
+    def assert_customList(self, loanId):
         clientList = self.crm_admin.customerList()
         i = 0
         status = False
@@ -46,4 +45,3 @@ class crm_general:
 
 if __name__ == "__main__":
     run = crm_general()
-

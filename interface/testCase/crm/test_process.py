@@ -12,10 +12,11 @@ from interface.testCaseManage.crm.crm_general import crm_general
 from interface.testCaseManage.xdd2_manage.assert_xdd2 import xdd2_assert
 
 
+@pytest.mark.usefixtures('setup_process')
 @allure.feature('关闭手工截单按钮和手工截单按钮')
 class Test_allButton_close:
 
-    @allure.story('不符合展位---进入好单客源')
+    @allure.story('不符合展位--不符合非定制非电核广告--进入好单客源')
     def test_case1(self, appAddOrder):
         """
         同时关闭人工和手工截单按钮
@@ -25,11 +26,13 @@ class Test_allButton_close:
             payload = order_data(city_name='安顺市')
             appAddOrder.app_addOrder(payload)
             loanId = appAddOrder.get_loanId()
+            print('loanID',loanId)
         with allure.step('好单客源校验'):
             xdd2_assert().app_source(loanId)
             print('-' * 25 + "按钮均关闭——发起线索不符合展位——进入好单客源" + '-' * 25)
 
 
+@pytest.mark.usefixtures('setup_process')
 @allure.feature('人工截单关闭,自动截单开启')
 class Test_handleClose_autoOpen:
 
@@ -46,7 +49,7 @@ class Test_handleClose_autoOpen:
             advertList = crmManege.advertisingList(electricalStatus=0)
             for i in range(0, len(advertList)):
                 advertID = advertList[i]['id']
-                crmManege.openStatus(ID=advertID, isOpen='false')
+                crmManege.openStatus(ID=advertID, isOpen='0')
         with allure.step('关闭所有展位'):
             close_booth = "update jgq.think_xzw_config_log SET `status` = 3;"
             mysql.sql_execute(close_booth)
@@ -103,6 +106,7 @@ class Test_handleClose_autoOpen:
             print('-' * 20 + "订单不符合（定制非电核,展位,非定制非电核）广告,进入好单客源" + '-' * 20)
 
 
+@pytest.mark.usefixtures('setup_process')
 @allure.feature('人工截单开启，自动截单开启')
 class Test_handleOPen_autoOpen:
 
@@ -169,7 +173,7 @@ class Test_handleOPen_autoOpen:
             advertList = crmManege.advertisingList(electricalStatus=0)
             for i in range(0, len(advertList)):
                 advertID = advertList[i]['id']
-                crmManege.openStatus(ID=advertID, isOpen='false')
+                crmManege.openStatus(ID=advertID, isOpen='0')
         with allure.step('信业帮发起线索请求'):
             payload = order_data(city_name='安顺市')
             appAddOrder.app_addOrder(payload)
@@ -181,6 +185,7 @@ class Test_handleOPen_autoOpen:
 
 
 @allure.feature('人工截单开启，自动截单关闭')
+@pytest.mark.usefixtures('setup_process')
 class Test_handleOPen_autoClose:
 
     @pytest.fixture(scope='class')
