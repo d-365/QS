@@ -97,3 +97,39 @@ class crm_pro:
         url = self.caps['crm'] + 'api/crm/advertising/update/openStatus'
         res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res
+
+    # 电销开放平台-填单
+    def apply(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/telemarketing/apply'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 更新手工截单按钮状态
+    def cutStatus1(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/loan/order/update/cutStatus'
+        res = self.re.put_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 更新自动截单按钮状态
+    def cutStatus2(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/loan/order/update/cutStatus'
+        res = self.re.put_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 充值明细列表
+    def rechargeList(self, headers, datas):
+        url = self.caps['crm'] + 'api/backend/finance/rechargeList'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 退款明细列表
+    def refundList(self, headers, datas):
+        url = self.caps['crm'] + 'api/backend/finance/refundList'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 消耗明细列表
+    def consumeList(self, headers, datas):
+        url = self.caps['crm'] + 'api/backend/finance/consumeList'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res

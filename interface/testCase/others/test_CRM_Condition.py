@@ -3,6 +3,7 @@
 # @Author  : dujun
 # @File    : test_CRM_Condition.py
 # @describe: CRM广告匹配
+import time
 
 
 class Test_CRM:
@@ -33,7 +34,7 @@ class Test_CRM:
             "is_wld": "有",
             "wld_money": 500,
             "is_zmf": "有",
-            "zmf": "500",
+            "zmf": "900",
             "credit_record": "无信用卡或贷款",
             "lnsurance": "投保人寿险且投保两年以上",
             "lnsurance_name": "安邦保险",

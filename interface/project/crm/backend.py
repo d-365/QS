@@ -135,19 +135,25 @@ class backend_pro:
         return res
 
     # 多融客-更新广告
-    def editAd(self,headers,datas):
+    def editAd(self, headers, datas):
         url = self.caps['crm'] + 'api/crm/ad/editAd'
-        res = self.re.post_json(url=url,headers=headers,datas=datas)
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res
 
     # 账户总览
-    def detail(self,headers):
+    def detail(self, headers):
         url = self.caps['crm'] + 'api/crm/account/detail'
         res = self.re.Get(url=url, headers=headers)
         return res
 
     # 修改账户日预算
-    def update(self,headers,datas):
+    def update(self, headers, datas):
         url = self.caps['crm'] + 'api/crm/account/update'
-        res = self.re.put_json(url=url, headers=headers,datas=datas)
+        res = self.re.put_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 修改账户日预算
+    def commonCustomerList(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/customer/commonCustomerList'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res

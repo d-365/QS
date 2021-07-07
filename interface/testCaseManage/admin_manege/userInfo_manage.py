@@ -14,25 +14,18 @@ from interface.tools.dataBase import DataBase
 class userInfo:
 
     def __init__(self):
+        self.userInfo = userInfo_pro()
         self.login_cookie = None
-
-    @staticmethod
-    def test_sql(phone):
         database = DataBase()
         # 重置信贷多多后台用户登录验证码
         sql = "UPDATE admin.think_sms SET code =1234,`status`=0 WHERE phone=17637898368;"
         database.sql_execute(sql=sql)
-        sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % phone
-        database.sql_execute(sql2)
 
-    def manage_login(self):
         user = user_pro()
         data = {"phone": "17637898368", "code": "1234"}
         self.login_cookie = user.login(payload=data)
-        return self.login_cookie
 
     def addOrder(self, phone, city_name):
-        self.userInfo = userInfo_pro()
         payload = addOrder_data(phone=phone, city_name=city_name)
         re = self.userInfo.addOrder(data=payload, cookies=self.login_cookie)
         print(re)
@@ -50,8 +43,5 @@ class userInfo:
 
 
 if __name__ == "__main__":
-    for i in range(0, 2):
-        run = userInfo()
-        run.test_sql('11111111103')
-        run.manage_login()
-        run.addOrder('11111111103', city_name='杭州市')
+    run = userInfo()
+    run.addOrder('13003672500', city_name='杭州市')

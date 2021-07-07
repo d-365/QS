@@ -5,6 +5,7 @@
 # @time: 2021/5/27 15:38
 # @describe :
 from sqlite3 import OperationalError
+
 import pymysql
 
 
@@ -35,4 +36,5 @@ class DataBase:
 
 if __name__ == '__main__':
     run = DataBase()
-    run.sql_execute(sql="SELECT * from jgq.think_sms WHERE phone = 17637898368;")
+    data = run.sql_execute(sql="SELECT * from jgq.think_sms WHERE phone = 17637898368;")
+    print(data)

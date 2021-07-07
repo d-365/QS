@@ -5,6 +5,7 @@
 # @describe:
 
 from interface.data.CRM_Account import username, account
+from interface.data.order_data import crm_order_data
 from interface.project.crm.manage import crm_pro
 
 
@@ -44,7 +45,8 @@ class crm_manage:
         payload = {
             "thinkLoanId": thinkLoanId
         }
-        self.crm.chargeBack(headers=self.headers, datas=payload)
+        res = self.crm.chargeBack(headers=self.headers, datas=payload)
+        print(res)
 
     # 待分配列表-查询按钮状态(截单按钮)
     def getStatus(self):
@@ -69,17 +71,7 @@ class crm_manage:
         #     }
         # }
         res = self.crm.addAdvertising(headers=self.headers, datas=payload)
-        return res
-
-    # 更新截单按钮状态
-    def cutStatus(self, status):
-        """
-        :param status: 0:关闭  1：开启
-        """
-        payload = {
-            "status": status
-        }
-        res = self.crm.cutStatus(headers=self.headers, datas=payload)
+        print('添加广告', res)
         return res
 
     # 查询广告列表
@@ -158,11 +150,89 @@ class crm_manage:
         res = self.crm.openStatus(headers=self.headers, datas=payload)
         return res
 
+    # 电销开放平台-填单
+    def apply(self, phone, cityName):
+        payload = crm_order_data(phone=phone, cityName=cityName)
+        res = self.crm.apply(headers=self.headers, datas=payload)
+        print('电销平台填单', res)
+        return res
+
+    # 更新截单按钮状态
+    def cutStatus(self, status):
+        """
+        :param status: 0:关闭  1：开启
+        """
+        payload = {
+            "status": status
+        }
+        res = self.crm.cutStatus(headers=self.headers, datas=payload)
+        return res
+
+    # 更新手动截单按钮状态
+    def cutStatus1(self, status):
+        """
+        :param status: 0:关闭  1：开启
+        """
+        payload = {
+            "status": status
+        }
+        res = self.crm.cutStatus1(headers=self.headers, datas=payload)
+        return res
+
+    # 更新自动截单按钮状态
+    def cutStatus2(self, status):
+        """
+        :param status: 0:关闭  1：开启
+        """
+        payload = {
+            "status": status
+        }
+        res = self.crm.cutStatus2(headers=self.headers, datas=payload)
+        return res
+
+    # 充值明细列表
+    def rechargeList(self, companyName, orderNo, startTime, endTime, pageNum, pageSize):
+        payload = {
+            "companyName": companyName,
+            "orderNo": orderNo,
+            "startTime": startTime,
+            "endTime": endTime,
+            "pageNum": pageNum,
+            "pageSize": pageSize
+        }
+        res = self.crm.rechargeList(headers=self.headers, datas=payload)
+        print(res)
+        return res
+
+    # 退款明细列表
+    def refundList(self, companyName, orderNo, startTime, endTime, pageNum, pageSize):
+        payload = {
+            "companyName": companyName,  # 公司名称
+            "orderNo": orderNo,  # 订单号
+            "startTime": startTime,  # 退款时间开始时间
+            "endTime": endTime,  # 退款时间结束时间
+            "pageNum": pageNum,
+            "pageSize": pageSize
+        }
+        res = self.crm.refundList(headers=self.headers, datas=payload)
+        print(res)
+        return res
+
+    # 退款明细列表
+    def consumeList(self, companyName, orderNo, startTime, endTime, pageNum, pageSize):
+        payload = {
+            "companyName": companyName,  # 公司名称
+            "orderNo": orderNo,  # 订单号
+            "startTime": startTime,  # 退款时间开始时间
+            "endTime": endTime,  # 退款时间结束时间
+            "pageNum": pageNum,
+            "pageSize": pageSize
+        }
+        res = self.crm.consumeList(headers=self.headers, datas=payload)
+        print(res)
+        return res
+
 
 if __name__ == "__main__":
     run = crm_manage(username['管理员'], env='')
-    data = {"companyName": "dujun_gs_001", "advertisingName": "int", "electricalStatus": 0,
-            "putCity": "安顺市", "status": 1, "suggestedPrice": 0, "requirement": {},
-            "noRequirement": {}}
-
-    print(run.addAdvertising(data))
+    run.apply(phone='13003672565', cityName='安顺市')

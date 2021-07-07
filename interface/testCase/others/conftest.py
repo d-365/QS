@@ -9,7 +9,7 @@ import pytest
 from interface.testCaseManage.api_manage.App_addOrder import addOrder
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def order():
     run = addOrder(phone='11111111121')
     return run

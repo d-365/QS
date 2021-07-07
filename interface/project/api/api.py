@@ -26,3 +26,10 @@ class api_pro:
         url = self.caps['api'] + 'interface/v2.0.0/loan/list'
         res = self.re.get(url=url, headers=headers)
         return res
+
+    # 查询我的线索发布记录
+    def myloan(self,headers):
+        url = self.caps['api'] + 'interface/v2.0.0/loan/list'
+        res = self.re.post(url=url, headers=headers)
+        return res
+

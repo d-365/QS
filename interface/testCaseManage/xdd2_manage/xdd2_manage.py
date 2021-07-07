@@ -32,6 +32,7 @@ class xdd2_manage:
             'code': '1234'
         }
         res = self.xddd2.xddd2_login(headers=login_headers, params=login_payload)
+        print('好单用户登录',res)
         token = res['data']['token']
         self.headers_data = {
             'auth': 'xdef33',
@@ -108,10 +109,12 @@ class xdd2_manage:
             'config_id': config_id
         }
         res = self.xddd2.catchOrderList(headers=self.headers_data, datas=payload)
+        print(res)
         boothOrderList = res['data']['data']
         return boothOrderList
 
 
 if __name__ == "__main__":
     run = xdd2_manage('13003672511')
-    run.changeStatus(1688,status=2)
+    print(run.orderList(520400))
+

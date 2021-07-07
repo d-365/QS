@@ -3,8 +3,9 @@
 # @Author  : dujun
 # @File    : crm_admin.py
 # @describe:
+import time
 
-from interface.data.CRM_Account import username, account
+from interface.data.CRM_Account import account
 from interface.project.crm.backend import backend_pro
 
 
@@ -229,17 +230,20 @@ class crm_admin:
         print(res)
         return res
 
-    # 多融客-客户管理-客户列表
-    def customerList(self, adName='', phone=''):
-        """
-        adName: 广告名称--非必填
-        """
-        payload = {
-            'adName': adName,
-            'pageSize': 10,
-            'pageNum': 1,
-            'phone': phone,
-        }
+    # 多融客-客户管理-全部线索
+    def customerList(self,startTime='',endTime=''):
+        startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
+        endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+        if startTime == '' and endTime == '':
+            payload = {
+                'startTime': startTime_today,
+                'endTime': endTime_today,
+            }
+        else:
+            payload = {
+                'startTime': startTime,
+                'endTime': endTime,
+            }
         res = self.backend.customerList(datas=payload, headers=self.headers)
         clientList = res['data']['records']
         print('多融客-客户管理-客户列表', clientList)
@@ -288,7 +292,7 @@ class crm_admin:
             'ids': [Id]
         }
         res = self.backend.deleteCustomer(datas=payload, headers=self.headers)
-        print("删除客户",res)
+        print("删除客户", res)
         return res
 
     # 多融客 - 客户管理- 新建跟进
@@ -336,7 +340,7 @@ class crm_admin:
 
         }
         res = self.backend.editAd(headers=self.headers, datas=payload)
-        # print('多融客，修改广告信息',res)
+        print('多融客，修改广告信息', res)
         return res
 
     # 账户总览
@@ -348,21 +352,43 @@ class crm_admin:
         return res
 
     # 修改账户日预算
-    def update(self,dayBudget):
+    def update(self, dayBudget):
         """
         :param dayBudget: 日预算
         :return:
         """
         payload = {
-            'dayBudget':dayBudget
+            'dayBudget': dayBudget
         }
         res = self.backend.update(headers=self.headers, datas=payload)
         return res
 
+    # 修改账户日预算
+    def commonCustomerList(self, adId, startTime='', endTime=''):
+        startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
+        endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+        if startTime == '' and endTime == '':
+            payload = {
+                'adId': adId,
+                'startTime': startTime_today,
+                'endTime': endTime_today,
+                'pageSize': 10,
+                'pageNum': 1
+            }
+        else:
+            payload = {
+                'adId': adId,
+                'startTime': startTime,
+                'endTime': endTime,
+                'pageSize': 10,
+                'pageNum': 1
+            }
+        res = self.backend.commonCustomerList(headers=self.headers, datas=payload)
+        commonCustomerList = res['data']['records']
+        print('公海列表', commonCustomerList)
+        return commonCustomerList
+
 
 if __name__ == "__main__":
-    run = crm_admin(env='', loginName='ptxs')
-    run.deleteCustomer('10770')
-
-
-
+    run = crm_admin(env='', loginName='interface_gs_manage')
+    run.commonCustomerList(adId=45)

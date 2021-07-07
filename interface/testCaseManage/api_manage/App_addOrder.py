@@ -5,7 +5,6 @@
 # @time: 2021/5/31 14:40
 # @describe : 信业帮App新增订单
 
-from interface.data.order_data import addOrder_data
 from interface.project.api.api import api_pro
 from interface.project.jdf.jdf import jdf_pro
 from interface.tools.dataBase import DataBase
@@ -73,15 +72,23 @@ class addOrder:
             'auth': '98ef33',
             'token': self.token,
             'system': 'android'
-
         }
         res = self.api.current_loanList(headers=data)
         loanID = res['data']['loan']['id']
         return loanID
 
+    def myloan(self):
+        headers = {
+            'phone': self.phone,
+            'auth': '98ef33',
+            'token': self.token,
+            'system': 'android',
+
+        }
+        res = self.api.myloan(headers=headers)
+        print(res)
+
 
 if __name__ == "__main__":
-    run = addOrder(phone='11111111119')
-    payload = addOrder_data(city_name='杭州市')
-    run.app_addOrder(payload)
-    input("press any key to exit!")
+    run = addOrder(phone='13003672507')
+    run.myloan()

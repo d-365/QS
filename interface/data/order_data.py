@@ -229,3 +229,55 @@ def order_data(city_name):
         }
     }
     return payload
+
+
+# CRM电销平台申请
+def crm_order_data(phone, cityName):
+    data = {
+        "realname": "du",
+        "age": 55,
+        "sex": "1",
+        "loan_money": "8",
+        "loan_time": 1,
+        "loan_goal": "结婚贷款",
+        "loan_id_name": "上班族",
+        "city_name": cityName,
+        "social_security": "连续6个月",
+        "provident_fund": "连续6个月",
+        "is_house": "有房产，不接受抵押",
+        "is_car": "有车，不接受抵押",
+        "credit_money": "3000元以下",
+        "is_wld": "有",
+        "is_zmf": "1",
+        "credit_record": "1年内逾期超过3次或者90天",
+        "lnsurance": "投保人寿险且投保两年以下",
+        "education": "初中",
+        "workunit": "测试",
+        "money": "2000元以下",
+        "income_type": "现金发放",
+        "workage": "6个月以上",
+        "house_type": "按揭房",
+        "house_money": "50万及以下",
+        "car_money": "10万以下",
+        "wld_money": "500",
+        "zmf": "500",
+        "lnsurance_name": "阳光保险",
+        "lnsurance_value": "5万元以下",
+        "loan_id": 0,
+        "car_data": {
+            "car_money": "10万以下"
+        },
+        "house_data": {
+            "house_money": "50万及以下",
+            "house_type": "按揭房"
+        },
+        "wld_data": {
+            "wld_money": "500"
+        },
+        "loan": {
+            "money": "2000元以下",
+            "income_type": "现金发放"
+        },
+        "phone": phone
+    }
+    return data
