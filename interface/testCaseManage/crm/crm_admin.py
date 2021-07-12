@@ -15,26 +15,12 @@ class crm_admin:
         self.backend = backend_pro(environment=env)
         payload = account(user=loginName)
         re = self.backend.login(datas=payload)
+        self.userId = re['data']['userEntity']['id']
         self.token = re['data']['token']
         self.headers = {
             'Content-Type': 'application/json',
             'token': self.token
         }
-
-    # # CRM后台-登录
-    # def login(self, account, password):
-    #     """
-    #     :param account: 员工账号
-    #     :param password: 密码，前端需要MD5加密
-    #     :return: 登录headers信息
-    #     """
-    #     payload = {
-    #         'account': account,
-    #         'password': password,
-    #         'validate': ''
-    #     }
-    #     res = self.backend.login(datas=payload)
-    #     return res
 
     # CRM后台-登录-获取登录信息
     def getLoginInfo(self):
@@ -231,7 +217,7 @@ class crm_admin:
         return res
 
     # 多融客-客户管理-全部线索
-    def customerList(self,startTime='',endTime=''):
+    def customerList(self, startTime='', endTime=''):
         startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
         endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
         if startTime == '' and endTime == '':
@@ -340,7 +326,7 @@ class crm_admin:
 
         }
         res = self.backend.editAd(headers=self.headers, datas=payload)
-        print('多融客，修改广告信息', res)
+        # print('多融客，修改广告信息', res)
         return res
 
     # 账户总览
@@ -364,8 +350,8 @@ class crm_admin:
         res = self.backend.update(headers=self.headers, datas=payload)
         return res
 
-    # 修改账户日预算
-    def commonCustomerList(self, adId, startTime='', endTime=''):
+    # 公海列表
+    def commonCustomerList(self, adId=None, startTime='', endTime=''):
         startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
         endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
         if startTime == '' and endTime == '':
@@ -384,12 +370,100 @@ class crm_admin:
                 'pageSize': 10,
                 'pageNum': 1
             }
+
         res = self.backend.commonCustomerList(headers=self.headers, datas=payload)
         commonCustomerList = res['data']['records']
         print('公海列表', commonCustomerList)
         return commonCustomerList
 
+    # 财务管理 - -查询账户记录
+    def record(self, startTime='', endTime='', types=None):
+        """
+        :param endTime:
+        :param startTime:
+        :param types: 0：充值 ，1：退款 ，2：CPC结算
+        :return:
+        """
+        startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
+        endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+        if startTime == '' and endTime == '':
+            payload = {
+                'startTime': startTime_today,
+                'endTime': endTime_today,
+                'type': types,
+                'pageSize': 10,
+                'pageNum': 1
+            }
+        else:
+            payload = {
+                'startTime': startTime,
+                'endTime': endTime,
+                'type': types,
+                'pageSize': 10,
+                'pageNum': 1
+            }
+        res = self.backend.record(headers=self.headers, params=payload)
+        record_list = res['data']['records']
+        # print('多融客--财务管理--查询账户记录',record_list)
+        return record_list
+
+    # 客户管理--全部线索
+    def customerDetail(self, Id):
+        payload = {
+            'id': Id
+        }
+        res = self.backend.customerDetail(headers=self.headers, params=payload)
+        customerDetail = res['data']
+        return customerDetail
+
+    # 全部线索,订单分配
+    def allotCustomer(self, ids, userId=''):
+        """
+        :param userId: 用户ID
+        :param ids: 订单ID 列表格式 [**]
+        """
+        if userId == '':
+            payload = {
+                'userId': self.userId,
+                'ids': ids
+            }
+        else:
+            payload = {
+                'userId': userId,
+                'ids': ids
+            }
+        res = self.backend.allotCustomer(headers=self.headers, datas=payload)
+        return res
+
+    # 多融客-客户管理_我的线索
+    def myCustomerList(self, adId=''):
+        payload = {
+            'pageNum': 1,
+            'pageSize': 10,
+            'adId': adId
+        }
+        res = self.backend.myCustomerList(headers=self.headers, datas=payload)
+        myCustomerList = res['data']['records']
+        return myCustomerList
+
+    # 多融客-我的线索-放入公海
+    def throwCustomer(self, loanId):
+        payload = {
+            'id': loanId
+        }
+        res = self.backend.throwCustomer(headers=self.headers, datas=payload)
+        print(res)
+        return res
+
+    # 多融客-公海-我来跟进
+    def followCustomer(self, loanId):
+        payload = {
+            'id': loanId
+        }
+        res = self.backend.followCustomer(headers=self.headers, datas=payload)
+        return res
+
 
 if __name__ == "__main__":
     run = crm_admin(env='', loginName='interface_gs_manage')
-    run.detail()
+    run.record(types='1')

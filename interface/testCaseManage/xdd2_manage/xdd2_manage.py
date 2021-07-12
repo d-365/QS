@@ -5,6 +5,7 @@
 # @describe: xdd2-好单多多应用层
 
 import hashlib
+import time
 
 from interface.project.xddd2.xddd2 import xddd_pro
 from interface.tools.dataBase import DataBase
@@ -32,7 +33,7 @@ class xdd2_manage:
             'code': '1234'
         }
         res = self.xddd2.xddd2_login(headers=login_headers, params=login_payload)
-        print('好单用户登录',res)
+        print('好单用户登录', res)
         token = res['data']['token']
         self.headers_data = {
             'auth': 'xdef33',
@@ -87,7 +88,8 @@ class xdd2_manage:
 
         }
         res = self.xddd2.orderList(headers=self.headers_data, params=payload)
-        return res
+        orderList = res['data']['data']
+        return orderList
 
     # 更新展位状态
     def changeStatus(self, config_id, status):
@@ -100,11 +102,11 @@ class xdd2_manage:
             'status': status
         }
         res = self.xddd2.changeStatus(headers=self.headers_data, datas=payload)
-        print('更新展位状态',res)
+        print('更新展位状态', res)
         return res
 
     # 查询展位订单
-    def catchOrderList(self,config_id):
+    def catchOrderList(self, config_id):
         payload = {
             'config_id': config_id
         }
@@ -116,5 +118,4 @@ class xdd2_manage:
 
 if __name__ == "__main__":
     run = xdd2_manage('13003672511')
-    print(run.orderList(520400))
-
+    run.catchOrderList(1688)

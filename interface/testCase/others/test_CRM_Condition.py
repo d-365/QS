@@ -10,7 +10,7 @@ class Test_CRM:
 
     def test_case2(self, order):
         payload = {
-            "city_name": "安顺市",
+            "city_name": "杭州市",
             "loan_money": "50",
             "loan_time": 6,
             "loan_goal": "消费贷款",

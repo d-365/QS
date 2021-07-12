@@ -10,9 +10,25 @@ from interface.data.order_data import crm_order_data
 from interface.project.crm.manage import crm_pro
 
 
-class crm_manage:
+class crm_manage(object):
+    # 记录第一个被创建对象的引用
+    instance = None
+    # 记录是否执行过初始化动作
+    init_flag = False
+
+    def __new__(cls, *args, **kwargs):
+
+        # 1. 判断类属性是否是空对象
+        if cls.instance is None:
+            # 2. 调用父类的方法，为第一个对象分配空间
+            cls.instance = super().__new__(cls)
+
+        # 3. 返回类属性保存的对象引用
+        return cls.instance
 
     def __init__(self, loginName, env=''):
+        if crm_manage.init_flag is False:
+            crm_manage.init_flag = True
         self.crm = crm_pro(environment=env)
         payload = account(user=loginName)
         re = self.crm.crm_login(datas=payload)
@@ -50,17 +66,17 @@ class crm_manage:
         print(res)
 
     # 待分配列表-查询按钮状态(截单按钮)
-    def getStatus(self):
+    def getCutStatus(self):
         headers = {
             'token': self.token
         }
-        res = self.crm.getStatus(headers=headers)
+        res = self.crm.getCutStatus(headers=headers)
         return res
 
     # crm添加广告
     def addAdvertising(self, payload):
         res = self.crm.addAdvertising(headers=self.headers, datas=payload)
-        print('添加广告', res)
+        # print('添加广告', res)
         return res
 
     # 查询广告列表
@@ -98,14 +114,14 @@ class crm_manage:
         # print('CRM-充值-余额', res)
         return res
 
-    # CRM-退款-余额
+    # CRM-退款
     def refund(self, companyName, threadMoney):
         payload = {
             "companyName": companyName,
             "threadMoney": threadMoney
         }
         res = self.crm.refund(headers=self.headers, datas=payload)
-        print('CRM-退款-余额', res)
+        # print('CRM-账户退款', res)
         return res
 
     # CRM- 线索推送广告
@@ -147,44 +163,24 @@ class crm_manage:
         return res
 
     # 更新截单按钮状态
-    def cutStatus(self, status):
+    def cutStatus(self, types, status):
         """
+        :param types:  1:自动填单  2：手动填单
         :param status: 0:关闭  1：开启
         """
-        payload = {
+        payloads = {
+            'type': types,
             "status": status
         }
-        res = self.crm.cutStatus(headers=self.headers, datas=payload)
-        return res
-
-    # 更新手动截单按钮状态
-    def cutStatus1(self, status):
-        """
-        :param status: 0:关闭  1：开启
-        """
-        payload = {
-            "status": status
-        }
-        res = self.crm.cutStatus1(headers=self.headers, datas=payload)
-        return res
-
-    # 更新自动截单按钮状态
-    def cutStatus2(self, status):
-        """
-        :param status: 0:关闭  1：开启
-        """
-        payload = {
-            "status": status
-        }
-        res = self.crm.cutStatus2(headers=self.headers, datas=payload)
+        res = self.crm.cutStatus(headers=self.headers, datas=payloads)
         return res
 
     # 充值明细列表
-    def rechargeList(self, companyName='', orderNo='', startTime='', endTime=''):
+    def rechargeList(self, companyName=None, orderNo=None, startTime='', endTime=''):
         startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
         endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
         if startTime == '' and endTime == '':
-            payload = {
+            payloads = {
                 "companyName": companyName,
                 "orderNo": orderNo,
                 "startTime": startTime_today,
@@ -193,7 +189,7 @@ class crm_manage:
                 "pageSize": 10
             }
         else:
-            payload = {
+            payloads = {
                 "companyName": companyName,
                 "orderNo": orderNo,
                 "startTime": startTime,
@@ -201,49 +197,50 @@ class crm_manage:
                 "pageNum": 1,
                 "pageSize": 10
             }
-        res = self.crm.rechargeList(headers=self.headers, datas=payload)
+        res = self.crm.rechargeList(headers=self.headers, datas=payloads)
         rechargeList = res['data']['records']
+        # print('充值明细列表',rechargeList)
         return rechargeList
 
     # 退款明细列表
-    def refundList(self, companyName='', orderNo='', startTime='', endTime='', pageNum='', pageSize=''):
+    def refundList(self, companyName=None, orderNo=None, startTime='', endTime=''):
         startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
         endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
         if startTime == '' and endTime == '':
-            payload = {
+            payloads = {
                 "companyName": companyName,
                 "orderNo": orderNo,
                 "startTime": startTime_today,
                 "endTime": endTime_today,
-                "pageNum": pageNum,
-                "pageSize": pageSize
+                "pageNum": 1,
+                "pageSize": 10
             }
         else:
-            payload = {
+            payloads = {
                 "companyName": companyName,
                 "orderNo": orderNo,
                 "startTime": startTime,
                 "endTime": endTime,
-                "pageNum": pageNum,
-                "pageSize": pageSize
+                "pageNum": 1,
+                "pageSize": 10
             }
-        res = self.crm.refundList(headers=self.headers, datas=payload)
+        res = self.crm.refundList(headers=self.headers, datas=payloads)
         refundList = res['data']['records']
         return refundList
 
     #  消耗明细列表
-    def consumeList(self, companyName='',adName='', Id='', startTime='', endTime='', pageNum='', pageSize=''):
+    def consumeList(self, companyName=None, adName=None, Id=None, startTime='', endTime=''):
         startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
         endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
         if startTime == '' and endTime == '':
             payload = {
                 "companyName": companyName,
-                'adName':adName,
+                'adName': adName,
                 "id	": Id,
                 "startTime": startTime_today,
                 "endTime": endTime_today,
-                "pageNum": pageNum,
-                "pageSize": pageSize
+                "pageNum": 1,
+                "pageSize": 10
             }
         else:
             payload = {
@@ -252,15 +249,15 @@ class crm_manage:
                 "id	": Id,
                 "startTime": startTime,
                 "endTime": endTime,
-                "pageNum": pageNum,
-                "pageSize": pageSize
+                "pageNum": 1,
+                "pageSize": 10
             }
         res = self.crm.consumeList(headers=self.headers, datas=payload)
         consumeList = res['data']['records']
         return consumeList
 
     # CRM管理-交易列表
-    def adTradeList(self, companyName='', startTime='', endTime=''):
+    def adTradeList(self, companyName=None, startTime='', endTime=''):
         startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
         endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
         if startTime == '' and endTime == '':
@@ -283,8 +280,48 @@ class crm_manage:
         rechargeList = res['data']['records']
         return rechargeList
 
+    # 添加产品
+    def add(self, payload):
+        """
+        :param payload: { productName: 产品名称, companyName:公司名称, loanLinesMin:贷款额度(万), loanDeadline:贷款期限,
+         rateUnit：利率单位, rate:利率, oneTimeCost:一次性费用 ，loanTime：放款时间，description：描述 }
+        """
+        res = self.crm.add(headers=self.headers, datas=payload)
+        print('添加产品', res)
+        return res
+
+    # 修改产品
+    def update(self, payload):
+        res = self.crm.update(headers=self.headers, datas=payload)
+        print('修改产品', res)
+        return res
+
+    # 产品列表
+    def product_list(self, companyName=None, productName=None):
+        payload = {
+            'companyName': companyName,
+            'productName': productName,
+            'pageNum': 1,
+            'pageSize': 10
+        }
+        res = self.crm.product_list(headers=self.headers, params=payload)
+        product_list = res['data']['records']
+        print('产品列表', product_list)
+        return product_list
+
+    # 删除产品
+    def delete_product(self, productId):
+        res = self.crm.delete_product(headers=self.headers, productId=productId)
+        print('删除产品', res)
+        return res
+
+    # 删除广告
+    def delete_advertising(self, adID):
+        res = self.crm.delete_advertising(headers=self.headers, adId=adID)
+        print('删除广告', res)
+        return res
+
 
 if __name__ == "__main__":
     run = crm_manage(username['管理员'], env='')
-    run.apply(phone='13003672580',cityName='安顺市')
-
+    run.push(advertisingId=236, thinkLoanId=150, companyName='dujun_gs_001')

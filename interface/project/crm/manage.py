@@ -38,9 +38,9 @@ class crm_pro:
         res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res
 
-    # 待分配列表-查询按钮状态(截单按钮)
-    def getStatus(self, headers):
-        url = self.caps['crm'] + 'api/crm/loan/order/getStatus'
+    # 待分配列表-查询截单按钮状态
+    def getCutStatus(self, headers):
+        url = self.caps['crm'] + 'api/crm/config/getCutStatus'
         res = self.re.Get(url=url, headers=headers)
         return res
 
@@ -58,7 +58,7 @@ class crm_pro:
 
     # 更新截单按钮状态
     def cutStatus(self, headers, datas):
-        url = self.caps['crm'] + 'api/crm/loan/order/update/cutStatus'
+        url = self.caps['crm'] + 'api/crm/config/updateCutStatus'
         res = self.re.put_json(url=url, headers=headers, datas=datas)
         return res
 
@@ -104,18 +104,6 @@ class crm_pro:
         res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res
 
-    # 更新手工截单按钮状态
-    def cutStatus1(self, headers, datas):
-        url = self.caps['crm'] + 'api/crm/loan/order/update/cutStatus'
-        res = self.re.put_json(url=url, headers=headers, datas=datas)
-        return res
-
-    # 更新自动截单按钮状态
-    def cutStatus2(self, headers, datas):
-        url = self.caps['crm'] + 'api/crm/loan/order/update/cutStatus'
-        res = self.re.put_json(url=url, headers=headers, datas=datas)
-        return res
-
     # 充值明细列表
     def rechargeList(self, headers, datas):
         url = self.caps['crm'] + 'api/backend/finance/rechargeList'
@@ -132,4 +120,34 @@ class crm_pro:
     def consumeList(self, headers, datas):
         url = self.caps['crm'] + 'api/backend/finance/consumeList'
         res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 添加产品
+    def add(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/product/save'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 修改产品
+    def update(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/product/update'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 产品列表
+    def product_list(self, headers, params):
+        url = self.caps['crm'] + 'api/crm/product/list'
+        res = self.re.Get(url=url, headers=headers, params=params)
+        return res
+
+    # 删除产品
+    def delete_product(self, headers, productId):
+        url = self.caps['crm'] + 'api/crm/product/%d' % productId
+        res = self.re.delete(url=url, headers=headers)
+        return res
+
+    # 删除产品
+    def delete_advertising(self, headers, adId):
+        url = self.caps['crm'] + 'api/crm/product/%d' % adId
+        res = self.re.delete(url=url, headers=headers)
         return res

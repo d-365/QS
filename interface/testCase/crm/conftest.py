@@ -17,7 +17,7 @@ from interface.tools.dataBase import DataBase
 # sys.path.append(path)
 
 # CRM后台
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='class')
 def crmManege(cmdOption):
     crm = crm_manage(env=cmdOption, loginName=username['管理员'])
     return crm
@@ -45,7 +45,7 @@ def appAddOrder(cmdOption):
 
 
 # 好单多多App
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def appXdd2(cmdOption):
     xdd2_res = xdd2_manage(env=cmdOption, phone='13003672511')
     return xdd2_res
@@ -59,8 +59,8 @@ def setup_process(crmManege, mysql):
     3:清除自动化产生广告数据
     4;关闭所有非定制非电核广告
     """
-    crmManege.cutStatus1(status=0)
-    crmManege.cutStatus2(status=0)
+    crmManege.cutStatus(types=1,status=0)
+    crmManege.cutStatus(types=2, status=0)
     select_booth = "SELECT * FROM jgq.think_xzw_config_log WHERE `status` = 2;"
     booth = mysql.sql_execute(select_booth)
     if booth:

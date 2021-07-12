@@ -4,8 +4,10 @@
 # @File    : test_price.py
 # @describe: CRM管理后台
 import time
+
 import allure
 import pytest
+
 from interface.data.order_data import order_data
 
 
@@ -23,12 +25,12 @@ class Test_priceLogic_callBack:
         mysql.sql_execute(sql)
         # 开启截单按钮
         with allure.step('登录CRM后台开启截单按钮'):
-            status_re = crmManege.getStatus()
-            status = status_re['data']['status']
-            if status:
+            status_re = crmManege.getCutStatus()
+            status = status_re['data']['artificialCutStatus']
+            if status == 0:
                 pass
             else:
-                crmManege.cutStatus(1)
+                crmManege.cutStatus(types=2, status=1)
         with allure.step('CRM添加需电核的广告,条件不限制'):
             Advertising_data = {"companyName": "dujun_gs_001", "advertisingName": "interface_yes",
                                 "electricalStatus": 1,
@@ -207,12 +209,8 @@ class Test_priceLogic_NoCallBack:
         sql = "delete  from crm.crm_advertising WHERE company_name = 'dujun_gs_001' and advertising_name ='interface_no' OR advertising_name ='interface_yes';"
         mysql.sql_execute(sql)
         with allure.step('登录CRM后台关闭截单按钮'):
-            status_re = crmManege.getStatus()
-            status = status_re['data']['status']
-            if status:
-                crmManege.cutStatus(0)
-            else:
-                pass
+            crmManege.cutStatus(types=1, status=0)
+            crmManege.cutStatus(types=2, status=0)
         with allure.step('查询数据库，关闭所有展位'):
             sql1 = "SELECT * FROM jgq.think_xzw_config_log WHERE `status` = 2;"
             booth = mysql.sql_execute(sql1)

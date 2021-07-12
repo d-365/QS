@@ -9,8 +9,9 @@ import xlrd
 class excel_addOrder:
 
     @staticmethod
-    def order_data(phone):
+    def order_data(excel_source_path,phone):
         """
+        :param excel_source_path: 源文件位置
         :param phone:
         :return: type(list)
         """
@@ -41,7 +42,7 @@ class excel_addOrder:
         house_data_value = ''
         age_value = ''
 
-        excel_path = r'C:\Users\dujun\Downloads\excel_data.xls'
+        excel_path = excel_source_path
         excel = xlrd.open_workbook(excel_path)
         sheet = excel.sheet_by_index(0)
         rows = sheet.nrows
@@ -122,5 +123,6 @@ class excel_addOrder:
 
 
 if __name__ == "__main__":
-    data = excel_addOrder().order_data('1111111103')
+    excel_path = r'C:\Users\dujun\Downloads\excel_data.xls'
+    data = excel_addOrder().order_data(excel_source_path=excel_path,phone='1111111103')
     print(data)

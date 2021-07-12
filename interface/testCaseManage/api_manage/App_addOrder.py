@@ -20,7 +20,6 @@ class addOrder:
         # 重置信业帮App用户登录验证码
         sql = "UPDATE jgq.think_sms SET STATUS=0 WHERE phone = %s;" % phone
         self.database.sql_execute(sql=sql)
-        sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % phone
         sql3 = "UPDATE jgq.think_loan SET creat_time = '2021-05-12 14:25:28',update_time = '2021-05-12 14:25:28',create_time_auto = '2021-05-12 14:25:28',update_time_auto = '2021-05-12 14:25:28',idcard = 411324199907100550 WHERE phone = %s ; " % phone
         self.database.sql_execute(sql3)
         self.phone = phone

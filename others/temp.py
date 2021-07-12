@@ -15,8 +15,8 @@ if __name__ == '__main__':
     html = requests.get(url, headers=headers).text
 
     soup = BeautifulSoup(html, 'lxml')
-    data = soup.find_all(attrs={'class':'ExploreSpecialCard-title'})
+    data = soup.find_all(attrs={'class': 'ExploreSpecialCard-title'})
     print(data)
     for i in range(len(data)):
-        print(data[i].get_text())
-
+        with open('text.txt', 'a+', encoding='utf-8') as file:
+            file.write(data[i].get_text()+'\n')

@@ -15,12 +15,12 @@ class xdd2_assert:
 
     # 好单客源校验
     def app_source(self, loanId):
-        time.sleep(2)
+        time.sleep(5)
         orderList = self.xdd2.orderList(520400)  # 安顺市
         i = 0
         status = False
-        while i < len(orderList['data']['data']):
-            if loanId == orderList['data']['data'][i]['id']:
+        while i < len(orderList):
+            if loanId == orderList[i]['id']:
                 status = True
                 break
             else:
@@ -34,4 +34,4 @@ class xdd2_assert:
 
 if __name__ == "__main__":
     run = xdd2_assert()
-    print(run.app_source(345))
+    print(run.app_source(123))

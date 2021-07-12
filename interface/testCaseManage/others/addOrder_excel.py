@@ -7,7 +7,6 @@
 
 import xlrd
 from xlutils.copy import copy
-
 from interface.data.orderData_excel import excel_addOrder
 from interface.project.admin.user import user_pro
 from interface.project.admin.userInformation import userInfo_pro
@@ -35,10 +34,9 @@ class userInfo:
         data = {"phone": "17637898368", "code": "1234"}
         self.login_cookie = user.login(payload=data)
 
-    def addOrder(self):
-        userInfo = userInfo_pro()
-        payload = excel_addOrder.order_data(phone=self.phone)
-        excel_path = r'C:\Users\dujun\Downloads\excel_data.xls'
+    def addOrder(self,excel_path):
+        user_Info = userInfo_pro()
+        payload = excel_addOrder.order_data(excel_source_path=excel_path,phone=self.phone)
         excel = xlrd.open_workbook(excel_path)
         older_sheet = excel.sheet_by_index(0)
         cols = older_sheet.ncols
@@ -47,11 +45,11 @@ class userInfo:
         new_sheet = new_excel.get_sheet(0)
         new_sheet.write(0, cols, '脚本价格')
         for i in range(0, len(payload)):
-            re = userInfo.addOrder(data=payload[i], cookies=self.login_cookie)
+            re = user_Info.addOrder(data=payload[i], cookies=self.login_cookie)
             payloads = {
                 'phone': self.phone, 'grabTime': None, 'page': 1, 'pageSize': 10
             }
-            res = userInfo.orderList(datas=payloads, cookies=self.login_cookie)
+            res = user_Info.orderList(datas=payloads, cookies=self.login_cookie)
             model_price = res['data']['data'][0]['model_price']
             new_sheet.write(i + 1, cols, model_price)
             sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % self.phone
@@ -62,5 +60,6 @@ class userInfo:
 
 if __name__ == "__main__":
     run = userInfo('11111111103')
+    excelPath = r'C:\Users\dujun\Downloads\excel_data.xls'
     run.manage_login()
-    run.addOrder()
+    run.addOrder(excel_path=excelPath)
