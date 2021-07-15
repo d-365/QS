@@ -24,7 +24,7 @@ def crmManege(cmdOption):
 
 
 # 多融客后台
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def crmAdmin(cmdOption):
     backend = crm_admin(env=cmdOption, loginName='interface_gs_manage')
     return backend
@@ -40,7 +40,7 @@ def mysql():
 # 信业帮App
 @pytest.fixture(scope='function')
 def appAddOrder(cmdOption):
-    app_order = addOrder(env=cmdOption, phone='11111111119')
+    app_order = addOrder(env=cmdOption, phone='18397858213')
     return app_order
 
 

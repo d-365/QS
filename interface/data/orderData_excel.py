@@ -41,63 +41,63 @@ class excel_addOrder:
         is_house_value = ''
         house_data_value = ''
         age_value = ''
-
         excel_path = excel_source_path
         excel = xlrd.open_workbook(excel_path)
         sheet = excel.sheet_by_index(0)
         rows = sheet.nrows
         cols = sheet.ncols
+        print(rows,cols)
         excel_listData = []
 
         for j in range(0, rows - 1):
             for i in range(0, cols - 1):
                 # 性别
-                if sheet.cell_value(j, i) == 'sex':
+                if sheet.cell_value(0, i) == 'sex':
                     sex_value = sheet.cell_value(j + 1, i)
                 # 借款金额
-                elif sheet.cell_value(j, i) == 'loan_money':
+                elif sheet.cell_value(0, i) == 'loan_money':
                     loan_money_value = sheet.cell_value(j + 1, i)
                 # 职业身份
-                elif sheet.cell_value(j, i) == 'loan_id_name':
+                elif sheet.cell_value(0, i) == 'loan_id_name':
                     loan_id_name_value = sheet.cell_value(j + 1, i)
                 # loan
-                elif sheet.cell_value(j, i) == 'loan':
+                elif sheet.cell_value(0, i) == 'loan':
                     loan_value = sheet.cell_value(j + 1, i)
                 # 城市
-                elif sheet.cell_value(j, i) == 'city_name':
+                elif sheet.cell_value(0, i) == 'city_name':
                     city_name_value = sheet.cell_value(j + 1, i)
                 # 信用卡额度
-                elif sheet.cell_value(j, i) == 'credit_money':
+                elif sheet.cell_value(0, i) == 'credit_money':
                     credit_money_value = sheet.cell_value(j + 1, i)
                 # is_car
-                elif sheet.cell_value(j, i) == 'is_car':
+                elif sheet.cell_value(0, i) == 'is_car':
                     is_car_value = sheet.cell_value(j + 1, i)
                 # car_data
-                elif sheet.cell_value(j, i) == 'car_data':
+                elif sheet.cell_value(0, i) == 'car_data':
                     car_data_value = sheet.cell_value(j + 1, i)
                 # is_house
-                elif sheet.cell_value(j, i) == 'is_house':
+                elif sheet.cell_value(0, i) == 'is_house':
                     is_house_value = sheet.cell_value(j + 1, i)
                 # house_data
-                elif sheet.cell_value(j, i) == 'house_data':
+                elif sheet.cell_value(0, i) == 'house_data':
                     house_data_value = sheet.cell_value(j + 1, i)
                 # age
-                elif sheet.cell_value(j, i) == '年龄':
+                elif sheet.cell_value(0, i) == '年龄':
                     age_value = sheet.cell_value(j + 1, i)
                 # 公积金缴纳月数
-                elif sheet.cell_value(j, i) == 'provident_fund':
+                elif sheet.cell_value(0, i) == 'provident_fund':
                     provident_fund_value = sheet.cell_value(j + 1, i)
                 # 社保缴纳月数
-                elif sheet.cell_value(j, i) == 'social_security':
+                elif sheet.cell_value(0, i) == 'social_security':
                     social_security_value = sheet.cell_value(j + 1, i)
                 # is_wld
-                elif sheet.cell_value(j, i) == 'is_wld':
+                elif sheet.cell_value(0, i) == 'is_wld':
                     is_wld_value = sheet.cell_value(j + 1, i)
                 # wld_data
-                elif sheet.cell_value(j, i) == 'wld_data':
+                elif sheet.cell_value(0, i) == 'wld_data':
                     wld_data_value = sheet.cell_value(j + 1, i)
                 # wld_data
-                elif sheet.cell_value(j, i) == 'education':
+                elif sheet.cell_value(0, i) == 'education':
                     education_value = sheet.cell_value(j + 1, i)
 
             payload = {

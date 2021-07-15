@@ -5,10 +5,8 @@
 # @describe: CRM订单分配流程
 
 import time
-
 import allure
 import pytest
-
 from interface.data.order_data import order_data
 from interface.testCaseManage.crm.crm_general import crm_general
 from interface.testCaseManage.xdd2_manage.assert_xdd2 import xdd2_assert
@@ -24,6 +22,7 @@ class Test_allButton_close:
         同时关闭人工和手工截单按钮
         发起线索---不符合展位---进入好单客源
         """
+
         with allure.step('信业帮发起线索请求'):
             payload = order_data(city_name='安顺市')
             appAddOrder.app_addOrder(payload)
@@ -74,6 +73,7 @@ class Test_handleClose_autoOpen:
             loanId = appAddOrder.get_loanId()
             print('loanID',loanId)
         with allure.step('多融客线索列表断言对应线索'):
+            time.sleep(5)
             crm_general().assert_customList(loanId)
             print('-' * 20 + "订单符合（定制非电核）广告,进入定制非电核广告" + '-' * 20)
 
@@ -87,7 +87,7 @@ class Test_handleClose_autoOpen:
             loanId = appAddOrder.get_loanId()
             print('loanID',loanId)
         with allure.step('展位校验'):
-            time.sleep(4)
+            time.sleep(8)
             boothOrderList = appXdd2.catchOrderList(1688)
             boothOrderID = boothOrderList[0]['id']
             assert loanId == boothOrderID
@@ -95,6 +95,9 @@ class Test_handleClose_autoOpen:
 
     @allure.story('订单不符合（定制非电核,展位）广告,进入非定制非电核广告')
     def test_case3(self, setup_function, appAddOrder, mysql):
+        with allure.step('删除多余数据'):
+            sql = "delete  from crm.crm_advertising WHERE company_name = 'dujun_gs_001' and advertising_name ='custom_yes' OR advertising_name ='custom_no' OR advertising_name ='common_no';"
+            mysql.sql_execute(sql)
         with allure.step('新增非定制非电核广告'):
             companyName = "dujun_gs_001"
             advertisingName = 'common_no'
@@ -111,6 +114,7 @@ class Test_handleClose_autoOpen:
             loanId = appAddOrder.get_loanId()
             print('loanID ',loanId,'广告ID',adId)
         with allure.step('多融客线索列表断言对应线索'):
+            time.sleep(5)
             crm_general().assert_customList(loanId)
             print('-' * 20 + "订单符合（定制非电核）广告,成功进入展位" + '-' * 20)
 
@@ -120,7 +124,9 @@ class Test_handleClose_autoOpen:
             payload = order_data(city_name='安顺市')
             appAddOrder.app_addOrder(payload)
             loanId = appAddOrder.get_loanId()
+            print('loanID ',loanId)
         with allure.step('好单客源校验'):
+            time.sleep(3)
             xdd2_assert().app_source(loanId)
             print('-' * 20 + "订单不符合（定制非电核,展位,非定制非电核）广告,进入好单客源" + '-' * 20)
 
@@ -172,6 +178,7 @@ class Test_handleOPen_autoOpen:
             time.sleep(3)
             crmManege.push(advertisingId=setup_class, thinkLoanId=loanId, companyName='dujun_gs_001')
         with allure.step('多融客校验'):
+            time.sleep(5)
             crm_general().assert_customList(loanId)
             print('-' * 20 + "线索符合定制需电核广告,推送定制需电核广告" + '-' * 20)
 
@@ -185,6 +192,7 @@ class Test_handleOPen_autoOpen:
             time.sleep(1)
             crmManege.setOrder(loanId)
         with allure.step('进入好单客源'):
+            time.sleep(3)
             xdd2_assert().app_source(loanId)
             print('-' * 20 + "线索符合定制需电核广告,手动置为电核单,进入好单客源" + '-' * 20)
 
@@ -199,13 +207,14 @@ class Test_handleOPen_autoOpen:
             time.sleep(1.5)
             crmManege.chargeBack(loanId)
         with allure.step('进入定制非电核广告,多融客校验'):
+            time.sleep(5)
             crm_general().assert_customList(loanId)
             print('-' * 20 + "线索符合定制需电核广告,手动退还订单,进入定制非电核广告" + '-' * 20)
 
     @allure.story('线索不符合定制需电核广告,直接进入定制非电核广告')
     def test_case4(self, appAddOrder, crmManege,setup_class):
         with allure.step('禁用所有定制需电核广告'):
-            advertList = crmManege.advertisingList(electricalStatus=0)
+            advertList = crmManege.advertisingList(electricalStatus=1)
             for i in range(0, len(advertList)):
                 advertID = advertList[i]['id']
                 crmManege.openStatus(ID=advertID, isOpen='0')
@@ -214,9 +223,8 @@ class Test_handleOPen_autoOpen:
             appAddOrder.app_addOrder(payload)
             loanId = appAddOrder.get_loanId()
             print('loanID ',loanId)
-
         with allure.step('进入定制非电核广告,多融客校验'):
-            time.sleep(1)
+            time.sleep(3)
             crm_general().assert_customList(loanId)
             print('-' * 20 + "线索符合定制需电核广告,手动退还订单,进入定制非电核广告" + '-' * 20)
 
@@ -268,7 +276,7 @@ class Test_handleOPen_autoClose:
             time.sleep(1.5)
             crmManege.chargeBack(loanId)
         with allure.step('展位校验'):
-            time.sleep(2)
+            time.sleep(3)
             boothOrderList = appXdd2.catchOrderList(1688)
             boothOrderID = boothOrderList[0]['id']
             assert loanId == boothOrderID

@@ -60,6 +60,7 @@ class crm_general:
 
     # 生成任意订单,推送给对应广告(定制需电核)
     def push_order(self, companyName, adName, electricalStatus, cpcPrice):
+        self.crmManege.recharge(companyName=companyName,threadMoney=cpcPrice)
         self.crmManege.cutStatus(types=2, status=1)
         crm_general().setup_recharge(companyName=companyName)
         companyName = "dujun_gs_001"
@@ -71,14 +72,16 @@ class crm_general:
         # 查询广告ID
         advert_list = self.crmManege.advertisingList(companyName=companyName, advertisingName=adName,
                                                      electricalStatus=electricalStatus)
-        advert_id = advert_list[0]['id']
-        # 修改订单CPC出价
-        self.crm_admin.editAd(ID=advert_id, budgetConfig=99999, cpcPrice=cpcPrice)
+        for i in range(0,len(advert_list)):
+            advert_id = advert_list[0]['id']
+            # 修改订单CPC出价
+            self.crm_admin.editAd(ID=advert_id, budgetConfig=99999, cpcPrice=cpcPrice)
 
         # 信业帮发起订单
         payload = order_data(city_name='安顺市')
         appAddOrder = addOrder(env='', phone='11111111119')
-        loanId = appAddOrder.get_loanId().app_addOrder(payload)
+        appAddOrder.app_addOrder(payload)
+        loanId = appAddOrder.get_loanId()
         # 推送对应广告
         print('线索ID：', loanId, '广告ID：', advert_id)
         time.sleep(2)
@@ -158,3 +161,4 @@ class crm_general:
 
 if __name__ == "__main__":
     run = crm_general()
+    run.assert_customList(436)

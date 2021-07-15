@@ -324,4 +324,4 @@ class crm_manage(object):
 
 if __name__ == "__main__":
     run = crm_manage(username['管理员'], env='')
-    run.push(advertisingId=236, thinkLoanId=150, companyName='dujun_gs_001')
+    print(run.consumeList())

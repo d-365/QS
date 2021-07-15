@@ -5,11 +5,10 @@
 # @describe: CRM系统各菜单接口自动化判断
 
 import random
-
+import time
 import allure
 import pytest
-
-from interface.data.order_data import order_data
+from faker import Faker
 from interface.testCaseManage.crm.crm_general import crm_general
 
 
@@ -35,7 +34,7 @@ class Test_finance:
         with allure.step('输入任意公司,可充值成功'):
             detail_before = crmAdmin.detail()
             money_before = detail_before['data']['money']
-            re3 = crmManege.recharge(companyName, price)
+            crmManege.recharge(companyName, price)
             detail_after = crmAdmin.detail()
             money_after = detail_after['data']['money']
             # 公司余额断言
@@ -93,7 +92,7 @@ class Test_finance:
             # 公司余额断言
             assert money_after == (money_before - money_before)
             # CRM公司退款记录断言
-            rechargeList = crmManege.consumeList(companyName=companyName)
+            rechargeList = crmManege.refundList(companyName=companyName)
             for i in range(len(rechargeList)):
                 if money_before == rechargeList[i]['threadMoney']:
                     break
@@ -112,29 +111,39 @@ class Test_finance:
     def test_consumeList(self, crmManege, crmAdmin, appAddOrder):
 
         with allure.step('发起线索,推送定制需电核广告'):
+
             companyName = 'dujun_gs_001'
             cpcPrice = 25
-            adName = ''
+            f = Faker(locale='zh_CN')
+            adName = f.user_name()
             electricalStatus = 1
-            push_data = crm_general().push_order(companyName=companyName,adName=adName, electricalStatus=electricalStatus, cpcPrice=cpcPrice)
+            push_data = crm_general().push_order(companyName=companyName, adName=adName,
+                                                 electricalStatus=electricalStatus, cpcPrice=cpcPrice)
             loanId = push_data[0]
         with allure.step('CRM+多融客消耗列表断言'):
             # CRM财务管理消耗记录断言
+            time.sleep(1)
             consumeList = crmManege.consumeList(companyName=companyName, adName=adName)
-            for i in range(len(consumeList)):
-                if cpcPrice == consumeList[i]['threadMoney'] and loanId == consumeList[i]['loanId'] and adName == \
+            i = 0
+            while i < len(consumeList):
+                if cpcPrice == consumeList[i]['comsumeMoney'] and loanId == consumeList[i]['thinkLoanId'] and adName == \
                         consumeList[i]['adName']:
+                    status = True
                     break
                 else:
-                    raise Exception("对应公司财务管理,消耗记录下未找到对应消耗记录")
+                    i += 1
+            if status is True:
+                pass
+            else:
+                raise Exception("CRM消耗记录未查询对应订单")
             # 多融客账户消耗记录断言
-            record_list = crmAdmin.record(types='1')
-            for i in range(len(record_list)):
-                if cpcPrice == record_list[i]['threadMoney']:
-                    break
-                else:
-                    raise Exception("多融客账户消耗记录下未找到对应消耗记录")
-            print('-' * 20 + "消耗记录(负数,退款金额大于账户余额,公司余额断言,CRM公司退款记录断言,多融客账户退款记录断言)" + '-' * 20)
+            time.sleep(1)
+            record_list = crmAdmin.record(types=2)
+            print(record_list)
+            if cpcPrice == record_list[i]['threadMoney']:
+                print('-' * 20 + "消耗记录(负数,退款金额大于账户余额,公司余额断言,CRM公司退款记录断言,多融客账户退款记录断言)" + '-' * 20)
+            else:
+                raise Exception("多融客账户消耗记录下未找到对应消耗记录")
 
 
 @allure.feature('多融客--客户管理')
@@ -146,19 +155,12 @@ class Test_customerManage:
         cpcPrice = 25
         adName = 'custom_yes'
         electricalStatus = 1
-        push_data = crm_general().push_order(companyName=companyName,adName=adName, electricalStatus=electricalStatus, cpcPrice=cpcPrice)
+        push_data = crm_general().push_order(companyName=companyName, adName=adName, electricalStatus=electricalStatus,
+                                             cpcPrice=cpcPrice)
         return push_data
 
-    @allure.story('多融客户全部线索_订单详情校验')
-    def test_case1(self, crmAdmin, setup_pushOrder):
-        with allure.step('发起线索--推送广告'):
-            loanId = setup_pushOrder[0]
-        with allure.step('用户发起订单数据与全部线索内订单数据断言'):
-            order_datas = order_data(city_name='安顺市')
-            customerDetail_list = crmAdmin.customerDetail(Id=loanId)
-
     @allure.story('多融客户全部线索_订单分配至我的线索,退还公海')
-    def test_case2(self, crmAdmin, setup_pushOrder):
+    def test_case1(self, crmAdmin, setup_pushOrder):
         with allure.step('发起线索--推送广告'):
             loanId = setup_pushOrder[0]
             adId = setup_pushOrder[1]
@@ -189,7 +191,7 @@ class Test_customerManage:
                     raise Exception(loanId, "不在公海中")
 
     @allure.story('多融客公海_我来跟进')
-    def test_case3(self, crmAdmin, setup_pushOrder):
+    def test_case2(self, crmAdmin, setup_pushOrder):
         with allure.step('发起线索--推送广告'):
             loanId = setup_pushOrder[0]
             adId = setup_pushOrder[1]
@@ -218,7 +220,8 @@ class Test_product:
     @pytest.fixture(scope='function')
     def add_product(self, crmManege):
         companyName = 'dujun_gs_001'
-        productName = '测试产品'
+        f = Faker(locale='zh_CN')
+        productName = f.word()
         description = '产品描述'
         product_data = {"productName": productName, "companyName": companyName, "loanLinesMin": 5, "loanLinesMax": 5,
                         "loanDeadlineMin": 5, "loanDeadlineMax": 5, "rateUnit": 2, "rateMin": 5, "rateMax": 5,
@@ -274,7 +277,8 @@ class Test_product:
             ad_data = {"companyName": companyName, "advertisingName": advertisingName,
                        "electricalStatus": electricalStatus, "putCity": "全国",
                        "status": 1,
-                       "suggestedPrice": 6, "requirement": {}, "noRequirement": {}, "customPlan": customPlan,"productName":productName}
+                       "suggestedPrice": 6, "requirement": {}, "noRequirement": {}, "customPlan": customPlan,
+                       "productName": productName, 'productId': product_ID}
             crmManege.addAdvertising(payload=ad_data)
             crmManege.delete_product(product_ID)
         with allure.step('断言产品在产品列表'):
@@ -293,32 +297,31 @@ class Test_product:
             else:
                 raise Exception('-' * 20 + "产品绑定广告进行删除,删除成功" + '-' * 20)
 
-
-@allure.feature('广告管理')
-class Test_advertising:
-
-    @pytest.fixture(scope='class')
-    # 创建广告
-    def add_advert(self):
-        companyName = "dujun_gs_001"
-        advertisingName = random.randint(0, 99999)
-        electricalStatus = 1
-        customPlan = 1
-        ad_data = {"companyName": companyName, "advertisingName": advertisingName, "electricalStatus": electricalStatus,
-                   "putCity": "全国", "status": 1, "suggestedPrice": 6, "customPlan": customPlan, "requirement": {},
-                   "noRequirement": {}, "remark": "interface"}
-        adID = crm_general().add_Advertising(ad_data=ad_data, cpcPrice=25)
-        return adID, ad_data
-
-    @allure.story('添加广告')
-    def test_case1(self):
-        pass
-
-    @allure.story('删除广告')
-    def test_case2(self, add_advert, crmManege):
-        crmManege.delete_advertising(adID=add_advert[0])
-        with allure.step('广告列表断言'):
-            advertList = crmManege.advertisingList(companyName=add_advert[1]['companyName'],
-                                                   advertisingName=add_advert[1]['advertisingName'])
-            assert len(advertList) == 0
-            print('-' * 20 + '删除广告成功' + '-' * 20)
+# @allure.feature('广告管理')
+# class Test_advertising:
+#
+#     @pytest.fixture(scope='class')
+#     # 创建广告
+#     def add_advert(self):
+#         companyName = "dujun_gs_001"
+#         advertisingName = random.randint(0, 99999)
+#         electricalStatus = 1
+#         customPlan = 1
+#         ad_data = {"companyName": companyName, "advertisingName": advertisingName, "electricalStatus": electricalStatus,
+#                    "putCity": "全国", "status": 1, "suggestedPrice": 6, "customPlan": customPlan, "requirement": {},
+#                    "noRequirement": {}, "remark": "interface"}
+#         adID = crm_general().add_Advertising(ad_data=ad_data, cpcPrice=25)
+#         return adID, ad_data
+#
+#     @allure.story('添加广告')
+#     def test_case1(self):
+#         pass
+#
+#     @allure.story('删除广告')
+#     def test_case2(self, add_advert, crmManege):
+#         crmManege.delete_advertising(adID=add_advert[0])
+#         with allure.step('广告列表断言'):
+#             advertList = crmManege.advertisingList(companyName=add_advert[1]['companyName'],
+#                                                    advertisingName=add_advert[1]['advertisingName'])
+#             assert len(advertList) == 0
+#             print('-' * 20 + '删除广告成功' + '-' * 20)

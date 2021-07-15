@@ -52,8 +52,8 @@ class userInfo:
             res = user_Info.orderList(datas=payloads, cookies=self.login_cookie)
             model_price = res['data']['data'][0]['model_price']
             new_sheet.write(i + 1, cols, model_price)
-            sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % self.phone
-            self.database.sql_execute(sql2)
+            sql3 = "UPDATE jgq.think_loan SET creat_time = '2021-05-12 14:25:28',update_time = '2021-05-12 14:25:28',create_time_auto = '2021-05-12 14:25:28',update_time_auto = '2021-05-12 14:25:28',idcard = 411324199907100550 WHERE phone = %s ; " % self.phone
+            self.database.sql_execute(sql3)
             print(re)
         new_excel.save(excel_path)
 

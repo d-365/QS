@@ -9,9 +9,10 @@ import allure
 import pytest
 
 from interface.data.order_data import order_data
+from interface.testCaseManage.crm.crm_general import crm_general
+from interface.testCaseManage.xdd2_manage.assert_xdd2 import xdd2_assert
 
 
-@pytest.mark.skipif(1 == 1, '跳过执行')
 @allure.feature("线索--->需电核广告,价格余额逻辑判断")
 class Test_priceLogic_callBack:
 
@@ -21,7 +22,7 @@ class Test_priceLogic_callBack:
         1：开启截单按钮 2：新增需电核广告
         :return: 广告ID
         """
-        sql = "delete  from crm.crm_advertising WHERE company_name = 'dujun_gs_001' and advertising_name ='interface_no' OR advertising_name ='interface_yes';"
+        sql = "delete  from crm.crm_advertising WHERE company_name = 'dujun_gs_001' and advertising_name ='custom_yes' OR advertising_name ='custom_no' OR advertising_name ='common_no';"
         mysql.sql_execute(sql)
         # 开启截单按钮
         with allure.step('登录CRM后台开启截单按钮'):
@@ -31,15 +32,21 @@ class Test_priceLogic_callBack:
                 pass
             else:
                 crmManege.cutStatus(types=2, status=1)
-        with allure.step('CRM添加需电核的广告,条件不限制'):
-            Advertising_data = {"companyName": "dujun_gs_001", "advertisingName": "interface_yes",
-                                "electricalStatus": 1,
-                                "putCity": "安顺市", "status": 1, "suggestedPrice": 6, "requirement": {},
-                                "noRequirement": {}}
-            crmManege.addAdvertising(payload=Advertising_data)
 
-            advert_list = crmManege.advertisingList(companyName="dujun_gs_001", advertisingName="interface_yes",
-                                                    electricalStatus=1)
+        with allure.step('新建定制需电核广告'):
+            companyName = "dujun_gs_001"
+            advertisingName = 'custom_yes'
+            customPlan = 1
+            electricalStatus = 1
+            ad_data = {"companyName": companyName, "advertisingName": advertisingName,
+                       "electricalStatus": electricalStatus,
+                       "putCity": "全国", "status": 1, "suggestedPrice": 6, "customPlan": customPlan,
+                       "requirement": {},
+                       "noRequirement": {}, "remark": "interface"}
+            crmManege.addAdvertising(payload=ad_data)
+
+            advert_list = crmManege.advertisingList(companyName=companyName, advertisingName=advertisingName,
+                                                    electricalStatus=electricalStatus)
             # 广告ID
             advert_id = advert_list[0]['id']
         return advert_id
@@ -196,7 +203,6 @@ class Test_priceLogic_callBack:
                 raise Exception("线索", loanId, "不在interface_yes广告中")
 
 
-@pytest.mark.skipif(1 == 1, '跳过执行')
 @allure.feature("线索--->不需电核广告,价格余额逻辑判断")
 class Test_priceLogic_NoCallBack:
 
@@ -206,9 +212,9 @@ class Test_priceLogic_NoCallBack:
         1：关闭截单按钮  2：关闭所有展位  3：新增不需电核广告
         :return: 广告ID
         """
-        sql = "delete  from crm.crm_advertising WHERE company_name = 'dujun_gs_001' and advertising_name ='interface_no' OR advertising_name ='interface_yes';"
+        sql = "delete  from crm.crm_advertising WHERE company_name = 'dujun_gs_001' and advertising_name ='custom_yes' OR advertising_name ='custom_no' OR advertising_name ='common_no';"
         mysql.sql_execute(sql)
-        with allure.step('登录CRM后台关闭截单按钮'):
+        with allure.step('登录CRM后台关闭截单按钮,人工+自动'):
             crmManege.cutStatus(types=1, status=0)
             crmManege.cutStatus(types=2, status=0)
         with allure.step('查询数据库，关闭所有展位'):
@@ -225,46 +231,41 @@ class Test_priceLogic_NoCallBack:
             for i in range(0, len(advertList)):
                 advertID = advertList[i]['id']
                 crmAdmin.editAdIsOpen(advertID, isOpen='false')
-            # 新增不需电核的广告
-            Advertising_data = {"companyName": "dujun_gs_001", "advertisingName": "interface_no", "electricalStatus": 0,
-                                "putCity": "安顺市", "status": 1, "suggestedPrice": 6, "requirement": {},
-                                "noRequirement": {}}
-            crmManege.addAdvertising(payload=Advertising_data)
-            advert_list = crmManege.advertisingList(companyName="dujun_gs_001", advertisingName="interface_no",
-                                                    electricalStatus=0)
+        with allure.step('新建定制需电核广告'):
+            companyName = "dujun_gs_001"
+            advertisingName = 'common_no'
+            customPlan = 0
+            electricalStatus = 0
+            ad_data = {"companyName": companyName, "advertisingName": advertisingName,
+                       "electricalStatus": electricalStatus,
+                       "putCity": "全国", "status": 1, "suggestedPrice": 6, "customPlan": customPlan,
+                       "requirement": {},
+                       "noRequirement": {}, "remark": "interface"}
+            crmManege.addAdvertising(payload=ad_data)
+
+            advert_list = crmManege.advertisingList(companyName=companyName, advertisingName=advertisingName,
+                                                    electricalStatus=electricalStatus)
+            # 广告ID
             advert_id = advert_list[0]['id']
-            # crmAdmin.editAd(ID=advert_id, budgetConfig=99999, cpcPrice=25)
         return advert_id
 
     @allure.story("CPC出价小于建议出价，进入好单客源")
     def test_case1(self, setup_class, crmAdmin, appAddOrder, appXdd2):
-        with allure.step('多融客修改对应广告信息'):
-            crmAdmin.editAd(ID=setup_class, budgetConfig=999999, cpcPrice=3)
+
         # 信业帮发起线索
         with allure.step('信业帮发起线索请求'):
             payload = order_data(city_name='安顺市')
             appAddOrder.app_addOrder(payload)
             # 线索ID
             loanId = appAddOrder.get_loanId()
-            print(loanId, setup_class)
-        with allure.step('好单客源校验'):
-            time.sleep(1.5)
-            orderList = appXdd2.orderList(520400)  # 安顺市
-            i = 0
-            status = False
-            while i < len(orderList['data']['data']):
-                if loanId == orderList['data']['data'][i]['id']:
-                    status = True
-                    break
-                else:
-                    i += 1
-            if status is True:
-                print('-----------------------CPC出价小于建议出价，进入好单客源----------------------------')
-            else:
-                raise Exception("订单不在好单客源中")
+            print(loanId, "广告ID", setup_class)
+        with allure.step('好单客源断言'):
+            time.sleep(3)
+            xdd2_assert().app_source(loanId)
+            print('-' * 20 + "CPC出价小于建议出价，进入好单客源" + '-' * 20)
 
     @allure.story("账户剩余日预算不足--好单客源")
-    def test_case3(self, setup_class, crmAdmin, appAddOrder, appXdd2, crmManege):
+    def test_case2(self, setup_class, crmAdmin, appAddOrder, appXdd2, crmManege):
         cpcPrice = 25
         with allure.step('多融客修改对应广告信息【CPC大于 建议出价】'):
             crmAdmin.editAd(ID=setup_class, budgetConfig=9999999, cpcPrice=cpcPrice)
@@ -281,24 +282,13 @@ class Test_priceLogic_NoCallBack:
                 crmManege.recharge(companyName='dujun_gs_001', threadMoney=cpcPrice)
         with allure.step('查询修改账户日预算【小于CPC出价25】'):
             crmAdmin.update(cpcPrice - 5)
-        with allure.step('好单客源校验'):
-            time.sleep(1.5)
-            orderList = appXdd2.orderList(520400)  # 安顺市
-            i = 0
-            status = False
-            while i < len(orderList['data']['data']):
-                if loanId == orderList['data']['data'][i]['id']:
-                    status = True
-                    break
-                else:
-                    i += 1
-            if status is True:
-                print('-----------------------账户剩余日预算不足--好单客源----------------------------')
-            else:
-                raise Exception("订单不在好单客源中")
+        with allure.step('好单客源断言'):
+            time.sleep(3)
+            xdd2_assert().app_source(loanId)
+            print('-' * 20 + "账户剩余日预算不足--好单客源" + '-' * 20)
 
     @allure.story("广告剩余预算小于CPC出价---->好单客源")
-    def test_case4(self, setup_class, crmAdmin, appAddOrder, crmManege, appXdd2):
+    def test_case3(self, setup_class, crmAdmin, appAddOrder, crmManege, appXdd2):
         cpcPrice = 25
         with allure.step('多融客修改对应广告信息【CPC大于 建议出价】'):
             crmAdmin.editAd(ID=setup_class, budgetConfig=999999, cpcPrice=cpcPrice)
@@ -317,24 +307,13 @@ class Test_priceLogic_NoCallBack:
             crmAdmin.update(999999)
         with allure.step('查询修改广告日预算【小于CPC出价25】'):
             crmAdmin.editAd(ID=setup_class, budgetConfig=cpcPrice - 5, cpcPrice=cpcPrice)
-        with allure.step('好单客源校验'):
-            time.sleep(1.5)
-            orderList = appXdd2.orderList(520400)  # 安顺市
-            i = 0
-            status = False
-            while i < len(orderList['data']['data']):
-                if loanId == orderList['data']['data'][i]['id']:
-                    status = True
-                    break
-                else:
-                    i += 1
-            if status is True:
-                print('-----------------------广告剩余预算小于CPC出价---->好单客源----------------------------')
-            else:
-                raise Exception("订单不在好单客源中")
+        with allure.step('好单客源断言'):
+            time.sleep(3)
+            xdd2_assert().app_source(loanId)
+            print('-' * 20 + "广告剩余预算小于CPC出价---->好单客源" + '-' * 20)
 
     @allure.story("条件均符合,正常推送到不需电核广告")
-    def test_case5(self, setup_class, crmAdmin, appAddOrder, crmManege):
+    def test_case4(self, setup_class, crmAdmin, appAddOrder, crmManege):
         """
         广告CPC出价 大于 建议出价
         账户余额大于CPC出价
@@ -358,22 +337,10 @@ class Test_priceLogic_NoCallBack:
             appAddOrder.app_addOrder(payload)
             # 线索ID
             loanId = appAddOrder.get_loanId()
-        with allure.step('不需电核广告校验'):
-            print(setup_class, loanId)
-            time.sleep(2)
-            clientList = crmAdmin.customerList()
-            i = 0
-            status = False
-            while i < len(clientList):
-                if loanId == clientList[i]['id']:
-                    status = True
-                    break
-                else:
-                    i += 1
-            if status is True:
-                print('----------------------条件均符合,正常推送到不需电核广告--------------------------')
-            else:
-                raise Exception("线索", loanId, "不在interface_no广告中")
+        with allure.step('进入定制非电核广告,多融客校验'):
+            time.sleep(5)
+            crm_general().assert_customList(loanId)
+            print('-' * 20 + "条件均符合,正常推送到不需电核广告" + '-' * 20)
 
 
 if __name__ == '__main__':

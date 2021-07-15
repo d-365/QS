@@ -10,8 +10,24 @@ from interface.project.crm.backend import backend_pro
 
 
 class crm_admin:
+    # 记录第一个被创建对象的引用
+    instance = None
+    # 记录是否执行过初始化动作
+    init_flag = False
+
+    def __new__(cls, *args, **kwargs):
+
+        # 1. 判断类属性是否是空对象
+        if cls.instance is None:
+            # 2. 调用父类的方法，为第一个对象分配空间
+            cls.instance = super().__new__(cls)
+
+        # 3. 返回类属性保存的对象引用
+        return cls.instance
 
     def __init__(self, loginName, env):
+        if crm_admin.init_flag is False:
+            crm_admin.init_flag = True
         self.backend = backend_pro(environment=env)
         payload = account(user=loginName)
         re = self.backend.login(datas=payload)
@@ -466,4 +482,4 @@ class crm_admin:
 
 if __name__ == "__main__":
     run = crm_admin(env='', loginName='interface_gs_manage')
-    run.record(types='1')
+    print(run.record(types=1))
