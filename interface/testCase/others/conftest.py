@@ -11,5 +11,5 @@ from interface.testCaseManage.api_manage.App_addOrder import addOrder
 
 @pytest.fixture(scope='function')
 def order():
-    run = addOrder(phone='18397858213')
+    run = addOrder(phone='15238113857')
     return run

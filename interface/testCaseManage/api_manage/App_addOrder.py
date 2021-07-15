@@ -32,6 +32,7 @@ class addOrder:
         }
 
         re = self.api.user_login(data=payload)
+        print(re)
         self.token = re['data']['token']
 
     # 信业帮新增订单

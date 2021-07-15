@@ -153,7 +153,8 @@ class Test_customerManage:
     def setup_pushOrder(self):
         companyName = 'dujun_gs_001'
         cpcPrice = 25
-        adName = 'custom_yes'
+        f = Faker(locale='zh_CN')
+        adName = f.word()
         electricalStatus = 1
         push_data = crm_general().push_order(companyName=companyName, adName=adName, electricalStatus=electricalStatus,
                                              cpcPrice=cpcPrice)
