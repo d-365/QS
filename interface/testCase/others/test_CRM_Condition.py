@@ -3,6 +3,8 @@
 # @Author  : dujun
 # @File    : test_CRM_Condition.py
 # @describe: CRM广告匹配
+import time
+
 
 class Test_CRM:
 
@@ -53,6 +55,7 @@ class Test_CRM:
                 "wld_money": 500
             }
         }
-        order.app_addOrder(datas=payload)
-        loanId = order.get_loanId()
-        print(loanId)
+        for i in range(0,1):
+            order.app_addOrder(datas=payload)
+            loanId = order.get_loanId()
+            print(loanId)

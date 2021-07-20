@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 # @author: dujun
 # @software: PyCharm
-# @file: requests.py
+# @file: request_raw.py
 # @time: 2021/5/27 10:51
 # @describe : requests方法封装
 
 import json
-
 import requests
 
 

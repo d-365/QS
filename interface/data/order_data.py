@@ -281,3 +281,55 @@ def crm_order_data(phone, cityName):
         "phone": phone
     }
     return data
+
+
+def save_electricalData(loanId):
+    payload = {
+        "loanMoney": 50,
+        "loanTime": 6,
+        "loanGoal": "消费贷款",
+        "loanIdName": "上班族",
+        "education": "本科及以上",
+        "cityName": "安顺市",
+        "socialSecurity": "3个月以下",
+        "providentFund": "3个月以下",
+        "workunit": "测试",
+        "money": "2000元",
+        "income_type": "转账工资",
+        "workage": "3个月-6个月",
+        "isHouse": "有房产，接受抵押",
+        "house_type": "按揭房",
+        "house_money": "50万-100万",
+        "isCar": "有车，不接受抵押",
+        "car_money": "10万以下",
+        "creditMoney": "3000元以下",
+        "isWld": "有",
+        "wld_money": 500,
+        "isZmf": "1",
+        "zmf": 500,
+        "creditRecord": "无信用卡或贷款",
+        "lnsurance": "投保人寿险且投保两年以上",
+        "lnsuranceName": "安邦保险",
+        "lnsuranceValue": "10万元以上",
+        "loan_id": "0",
+        "carData": {
+            "car_money": "10万以下"
+        },
+        "houseData": {
+            "house_money": "50万-100万",
+            "house_type": "按揭房"
+        },
+        "loan": {
+            "money": "2000元",
+            "income_type": "转账工资"
+        },
+        "wldData": {
+            "wld_money": 500
+        },
+        "id": loanId,
+        "ages": 22,
+        "sex": "2",
+        "realname": "杜军",
+        "status": "4"
+    }
+    return payload

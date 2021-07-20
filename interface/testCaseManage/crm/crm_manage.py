@@ -6,7 +6,7 @@
 import time
 
 from interface.data.CRM_Account import username, account
-from interface.data.order_data import crm_order_data
+from interface.data.order_data import crm_order_data, save_electricalData
 from interface.project.crm.manage import crm_pro
 
 
@@ -34,7 +34,8 @@ class crm_manage(object):
         re = self.crm.crm_login(datas=payload)
         self.token = re['data']['token']
         self.headers = {
-            'Content-Type': 'application/json',
+            # 'Accept': 'application/json',
+            "Content-Type": "application/json",
             'token': self.token
         }
 
@@ -321,7 +322,89 @@ class crm_manage(object):
         print('删除广告', res)
         return res
 
+    # 电销中心列表
+    def electrical(self, phone, realname=''):
+        payload = {
+            'pageNum': '1',
+            'pageSize': '10',
+            'phone': phone,
+            'realname': realname,
+        }
+        headers = {
+            'token': self.token
+        }
+        res = self.crm.electrical(headers=headers, params=payload)
+        electrical_list = res['data']['records']
+        return electrical_list
+
+    # 电销中心_保存订单
+    def electrical_save(self, loanID):
+        payload = save_electricalData(loanId=loanID)
+        res = self.crm.electrical_save(headers=self.headers, datas=payload)
+        print(res)
+        return res
+
+    # 电销详情-符合条件广告列表
+    def eligible_list(self, loanID):
+        payload = {
+            'pageNum': '1',
+            'pageSize': '10',
+            'id': loanID
+        }
+        headers = {
+            'token': self.token
+        }
+        res = self.crm.eligible_list(headers=headers, params=payload)
+        eligible_lists = res['data']['records']
+        return eligible_lists
+
+    # 电销详情_推送订单(定制需电核)
+    def eligible_push(self, advertisingId, thinkLoanId, companyName):
+        """
+        :param advertisingId: 广告ID
+        :param thinkLoanId: 订单ID
+        :param companyName: 公司名称
+        """
+        payload = {
+            'advertisingId': advertisingId,
+            'thinkLoanId': thinkLoanId,
+            'companyName': companyName
+        }
+        res = self.crm.eligible_push(headers=self.headers, datas=payload)
+        return res
+
+    # 截单列表-已分配列表
+    def distributed_list(self, loanId=None):
+        payload = {
+            'pageNum': '1',
+            'pageSize': '10',
+            'loanId': str(loanId)
+        }
+        headers = {
+            'token': self.token
+        }
+        res = self.crm.distributed_list(headers=headers, params=payload)
+        distributed_lists = res['data']['records']
+        return distributed_lists
+
+    # 已分配列表-线索详情
+    def already_detail(self, loanID):
+        headers = {
+            'token': self.token
+        }
+        res = self.crm.already_detail(headers=headers, loanID=loanID)
+        detail_list = res['data']
+        return detail_list
+
+    # 电销详情-提交订单
+    def submitOrder(self, loanID):
+        payload = {
+            'loanId': loanID
+        }
+        res = self.crm.submitOrder(headers=self.headers, datas=payload)
+        return res
+
 
 if __name__ == "__main__":
     run = crm_manage(username['管理员'], env='')
-    print(run.consumeList())
+    run.electrical_save(3408)

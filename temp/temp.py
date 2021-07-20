@@ -3,14 +3,7 @@
 # @Author  : dujun
 # @File    : test_temp.py
 # @describe:
+import socket
 
-if __name__ == '__main__':
-    data = {
-        'id': '20120001',
-        'name': 'Bob',
-        'age': 20
-    }
-    table = 'students'
-    keys = ', '.join(data.keys())
-    values = ', '.join(['%s'] * len(data))
-    print(values)
+
+

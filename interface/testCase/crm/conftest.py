@@ -12,9 +12,13 @@ from interface.testCaseManage.crm.crm_manage import crm_manage
 from interface.testCaseManage.xdd2_manage.xdd2_manage import xdd2_manage
 from interface.tools.dataBase import DataBase
 
-
 # path = r'interface/testCase/crm/conftest.py'
 # sys.path.append(path)
+
+setting = {
+    'api_phone': 18397858213  # 信业帮手机号
+}
+
 
 # CRM后台
 @pytest.fixture(scope='class')
@@ -40,7 +44,7 @@ def mysql():
 # 信业帮App
 @pytest.fixture(scope='function')
 def appAddOrder(cmdOption):
-    app_order = addOrder(env=cmdOption, phone='18397858213')
+    app_order = addOrder(env=cmdOption, phone=setting['api_phone'])
     return app_order
 
 
@@ -59,7 +63,7 @@ def setup_process(crmManege, mysql):
     3:清除自动化产生广告数据
     4;关闭所有非定制非电核广告
     """
-    crmManege.cutStatus(types=1,status=0)
+    crmManege.cutStatus(types=1, status=0)
     crmManege.cutStatus(types=2, status=0)
     select_booth = "SELECT * FROM jgq.think_xzw_config_log WHERE `status` = 2;"
     booth = mysql.sql_execute(select_booth)

@@ -6,10 +6,16 @@
 
 import random
 import time
+
 import allure
 import pytest
 from faker import Faker
+from loguru import logger
+
+from interface.data.order_data import order_data
 from interface.testCaseManage.crm.crm_general import crm_general
+from interface.tools.assert_custom import custom_assert
+from .conftest import setting
 
 
 @allure.feature('财务管理')
@@ -298,31 +304,120 @@ class Test_product:
             else:
                 raise Exception('-' * 20 + "产品绑定广告进行删除,删除成功" + '-' * 20)
 
-# @allure.feature('广告管理')
-# class Test_advertising:
-#
-#     @pytest.fixture(scope='class')
-#     # 创建广告
-#     def add_advert(self):
-#         companyName = "dujun_gs_001"
-#         advertisingName = random.randint(0, 99999)
-#         electricalStatus = 1
-#         customPlan = 1
-#         ad_data = {"companyName": companyName, "advertisingName": advertisingName, "electricalStatus": electricalStatus,
-#                    "putCity": "全国", "status": 1, "suggestedPrice": 6, "customPlan": customPlan, "requirement": {},
-#                    "noRequirement": {}, "remark": "interface"}
-#         adID = crm_general().add_Advertising(ad_data=ad_data, cpcPrice=25)
-#         return adID, ad_data
-#
-#     @allure.story('添加广告')
-#     def test_case1(self):
-#         pass
-#
-#     @allure.story('删除广告')
-#     def test_case2(self, add_advert, crmManege):
-#         crmManege.delete_advertising(adID=add_advert[0])
-#         with allure.step('广告列表断言'):
-#             advertList = crmManege.advertisingList(companyName=add_advert[1]['companyName'],
-#                                                    advertisingName=add_advert[1]['advertisingName'])
-#             assert len(advertList) == 0
-#             print('-' * 20 + '删除广告成功' + '-' * 20)
+
+@allure.feature('电销中心')
+@pytest.mark.usefixtures('setup_process')
+class Test_telemarketing:
+    """
+   1:关闭自动截单 + 人工截单
+   2:关闭展位 + 非定制非电核广告
+   """
+
+    @allure.story('信业帮发起线索,电销列表校验')
+    def test_case1(self, appAddOrder, crmManege):
+        with allure.step('信业帮发起线索请求'):
+            payload = order_data(city_name='安顺市')
+            appAddOrder.app_addOrder(payload)
+            loanId = appAddOrder.get_loanId()
+            logger.debug('loanID----{}'.format(loanId))
+        with allure.step('电销中心列表断言'):
+            electrical_lists = crmManege.electrical(phone=setting['api_phone'])
+            custom_assert().dict_json_include(expect_key='id', expect_value=loanId, dict_data=electrical_lists)
+        with allure.step('保存订单,电销列表校验'):
+            crmManege.electrical_save(loanID=loanId)
+            electrical_lists_after = crmManege.electrical(phone=setting['api_phone'])
+            i = 0
+            while i < len(electrical_lists_after):
+                assert loanId not in electrical_lists_after[i]
+                i += 1
+
+    @allure.story("发起线索,电销列表保存,推送")
+    def test_case2(self, appAddOrder, crmManege):
+        with allure.step('信业帮发起线索请求'):
+            payload = order_data(city_name='安顺市')
+            appAddOrder.app_addOrder(payload)
+            loanId = appAddOrder.get_loanId()
+            logger.debug('loanID----{}'.format(loanId))
+        with allure.step('创建【定制—需电核】广告 custom_yes'):
+            companyName = "dujun_gs_001"
+            advertisingName = 'custom_yes'
+            customPlan = 1
+            electricalStatus = 1
+            ad_data = {"companyName": companyName, "advertisingName": advertisingName,
+                       "electricalStatus": electricalStatus, "putCity": "全国",
+                       "status": 1,
+                       "suggestedPrice": 6, "requirement": {}, "noRequirement": {}, "customPlan": customPlan}
+            advert_id = crm_general().add_Advertising(ad_data=ad_data, cpcPrice=25)
+        with allure.step('电销详情,保存订单'):
+            crmManege.electrical_save(loanID=loanId)
+        with allure.step('校验定制需电核广告列表'):
+            eligible_lists = crmManege.eligible_list(loanID=loanId)
+            custom_assert().dict_json_include(expect_key='id', expect_value=advert_id, dict_data=eligible_lists)
+            custom_assert().dict_json_include(expect_key='companyName', expect_value=companyName,
+                                              dict_data=eligible_lists)
+        with allure.step('推送对应订单至定制需电核广告'):
+            time.sleep(1)
+            crmManege.eligible_push(advertisingId=advert_id, thinkLoanId=loanId, companyName=companyName)
+            time.sleep(3)
+            detail_lists = crmManege.already_detail(loanID=loanId)
+            assert detail_lists['advertisingName'] == advertisingName
+        with allure.step('多融客线索列表断言对应线索'):
+            crm_general().assert_customList(loanId)
+            logger.debug('-' * 20 + "发起线索,电销列表保存,推送" + '-' * 20)
+
+    @allure.story("提交订单,进入定制非电核")
+    def test_case3(self, crmManege, appAddOrder):
+        with allure.step('开启人工+自动截单按钮'):
+            crmManege.cutStatus(types=1, status=1)
+            crmManege.cutStatus(types=2, status=1)
+        with allure.step('创建定制不需电核广告'):
+            companyName = "dujun_gs_001"
+            advertisingName = 'custom_no'
+            customPlan = 1
+            electricalStatus = 0
+            ad_data = {"companyName": companyName, "advertisingName": advertisingName,
+                       "electricalStatus": electricalStatus, "putCity": "全国",
+                       "status": 1,
+                       "suggestedPrice": 6, "requirement": {}, "noRequirement": {}, "customPlan": customPlan}
+            crm_general().add_Advertising(ad_data=ad_data, cpcPrice=25)
+        with allure.step('信业帮发起线索请求'):
+            payload = order_data(city_name='安顺市')
+            appAddOrder.app_addOrder(payload)
+            loanId = appAddOrder.get_loanId()
+            logger.debug('loanID----{}'.format(loanId))
+        with allure.step('电销详情，保存提交订单'):
+            crmManege.electrical_save(loanID=loanId)
+            crmManege.submitOrder(loanID=loanId)
+        with allure.step('订单进入定制非电核广告断言'):
+            detail_lists = crmManege.already_detail(loanID=loanId)
+            assert detail_lists['advertisingName'] == advertisingName
+            crm_general().assert_customList(loanId)
+            logger.debug('-' * 20 + "发起线索,电销列表保存,推送进入定制非电核" + '-' * 20)
+
+    @allure.story("提交订单,进入非定制非电核")
+    def test_case4(self, crmManege, appAddOrder):
+        with allure.step('开启人工,关闭自动截单按钮'):
+            crmManege.cutStatus(types=1, status=0)
+        with allure.step('创建非定制不需电核广告'):
+            companyName = "dujun_gs_001"
+            advertisingName = 'common_no'
+            customPlan = 0
+            electricalStatus = 0
+            ad_data = {"companyName": companyName, "advertisingName": advertisingName,
+                       "electricalStatus": electricalStatus, "putCity": "全国",
+                       "status": 1,
+                       "suggestedPrice": 6, "requirement": {}, "noRequirement": {}, "customPlan": customPlan}
+            advert_id = crm_general().add_Advertising(ad_data=ad_data, cpcPrice=25)
+        with allure.step('信业帮发起线索请求'):
+            payload = order_data(city_name='安顺市')
+            appAddOrder.app_addOrder(payload)
+            loanId = appAddOrder.get_loanId()
+            logger.debug('loanID----{}'.format(loanId))
+        with allure.step('电销详情，保存提交订单'):
+            crmManege.electrical_save(loanID=loanId)
+            crmManege.submitOrder(loanID=loanId)
+        with allure.step('订单进入非定制非电核广告断言'):
+            detail_lists = crmManege.already_detail(loanID=loanId)
+            assert detail_lists['advertisingName'] == advertisingName
+            crm_general().assert_customList(loanId)
+            logger.debug('-' * 20 + "发起线索,电销列表保存，进入非定制非电核" + '-' * 20)

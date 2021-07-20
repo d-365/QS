@@ -6,7 +6,7 @@
 # @describe : 信业帮App 项目
 
 from interface.base.caps import Caps
-from interface.base.requests import Base_requests
+from interface.base.request_raw import Base_requests
 
 
 class jdf_pro:

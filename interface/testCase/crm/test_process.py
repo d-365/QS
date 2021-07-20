@@ -29,6 +29,7 @@ class Test_allButton_close:
             loanId = appAddOrder.get_loanId()
             print('loanID', loanId)
         with allure.step('好单客源校验'):
+            time.sleep(3)
             xdd2_assert().app_source(loanId)
             print('-' * 25 + "按钮均关闭——发起线索不符合展位——进入好单客源" + '-' * 25)
 

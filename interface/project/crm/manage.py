@@ -3,9 +3,9 @@
 # @Author  : dujun
 # @File    : manage.py
 # @describe:
-
+from interface.base.base_request import base_requests
 from interface.base.caps import Caps
-from interface.base.requests import Base_requests
+from interface.base.request_raw import Base_requests
 
 
 class crm_pro:
@@ -13,6 +13,7 @@ class crm_pro:
     def __init__(self, environment=''):
         self.re = Base_requests()
         self.caps = Caps(env=environment)
+        self.req = base_requests()
 
     # 多融客CRM登录
     def crm_login(self, datas):
@@ -150,4 +151,46 @@ class crm_pro:
     def delete_advertising(self, headers, adId):
         url = self.caps['crm'] + 'api/crm/product/%d' % adId
         res = self.re.delete(url=url, headers=headers)
+        return res
+
+    # 电销中心列表
+    def electrical(self, headers, params):
+        url = self.caps['crm'] + 'api/crm/electrical/list'
+        res = self.req.request(method='get', url=url, headers=headers, data=params)
+        return res
+
+    # 电销中心列表
+    def electrical_save(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/electrical/save'
+        res = self.req.request(method='post', url=url, data_is_json=True, headers=headers, data=datas)
+        return res
+
+    # 电销详情-符合条件广告列表
+    def eligible_list(self, headers, params):
+        url = self.caps['crm'] + 'api/crm/electrical/eligible/list'
+        res = self.req.request(method='get', url=url, headers=headers, data=params)
+        return res
+
+    # 电销详情_推送订单(定制需电核)
+    def eligible_push(self, headers, datas):
+        url = self.caps['crm'] + 'api/crm/electrical/push'
+        res = self.req.request(method='post',data_is_json=True, url=url, headers=headers, data=datas)
+        return res
+
+    # 截单列表-已分配列表
+    def distributed_list(self, headers,params):
+        url = self.caps['crm'] + 'api/crm/loan/order/distributed/list'
+        res = self.req.request(method='get', url=url, headers=headers,data=params)
+        return res
+
+    # 已分配列表-线索详情
+    def already_detail(self, headers,loanID):
+        url = self.caps['crm'] + 'api/crm/loan/order/already/detail?id={}'.format(loanID)
+        res = self.req.request(method='get', url=url, headers=headers)
+        return res
+
+    # 电销详情-提交订单
+    def submitOrder(self, headers,datas):
+        url = self.caps['crm'] + 'api/crm/electrical/submitOrder'
+        res = self.req.request(method='post', url=url, headers=headers,data_is_json=True,data=datas)
         return res

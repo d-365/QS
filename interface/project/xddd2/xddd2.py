@@ -5,7 +5,7 @@
 # @describe: 好单多多APP
 
 from interface.base.caps import Caps
-from interface.base.requests import Base_requests
+from interface.base.request_raw import Base_requests
 
 
 class xddd_pro:

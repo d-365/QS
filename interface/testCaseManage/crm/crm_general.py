@@ -161,4 +161,4 @@ class crm_general:
 
 if __name__ == "__main__":
     run = crm_general()
-    run.assert_customList(436)
+    run.add_common_no(25)
