@@ -4,12 +4,19 @@
 # @file: dataBase.py
 # @time: 2021/5/27 15:38
 # @describe :
-from sqlite3 import OperationalError
 
+from sqlite3 import OperationalError
 import pymysql
 
 
-class DataBase:
+class DataBase(object):
+
+    instance = None
+
+    def __new__(cls):
+        if cls.instance is None:
+            cls.instance = super().__new__(cls)
+        return cls.instance
 
     def __init__(self, host='', port='', user='', password=''):
         if host == '' and port == '' and user == '' and password == '':
@@ -36,5 +43,6 @@ class DataBase:
 
 if __name__ == '__main__':
     run = DataBase()
+    print(run)
     data = run.sql_execute(sql="SELECT * from jgq.think_sms WHERE phone = 17637898368;")
     print(data)

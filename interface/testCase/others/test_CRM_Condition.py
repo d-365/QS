@@ -10,7 +10,7 @@ class Test_CRM:
 
     def test_case2(self, order):
         payload = {
-            "city_name": "安顺市",
+            "city_name": "杭州市",
             "loan_money": "50",
             "loan_time": 6,
             "loan_goal": "消费贷款",
@@ -34,7 +34,7 @@ class Test_CRM:
             "is_wld": "有",
             "wld_money": 500,
             "is_zmf": "有",
-            "zmf": "900",
+            "zmf": "555",
             "credit_record": "无信用卡或贷款",
             "lnsurance": "投保人寿险且投保两年以上",
             "lnsurance_name": "安邦保险",

@@ -3,11 +3,11 @@
 # @software: PyCharm
 # @file: addOrder_excel.py
 # @time: 2021/5/27 19:15
-# @describe :
+# @describe : 好单多多后台
 
 from interface.data.order_data import addOrder_data
-from interface.project.admin.user import user_pro
-from interface.project.admin.userInformation import userInfo_pro
+from interface.project.admin_old.user import user_pro
+from interface.project.admin_old.userInformation import userInfo_pro
 from interface.tools.dataBase import DataBase
 
 
@@ -18,7 +18,7 @@ class userInfo:
         self.login_cookie = None
         database = DataBase()
         # 重置信贷多多后台用户登录验证码
-        sql = "UPDATE admin.think_sms SET code =1234,`status`=0 WHERE phone=17637898368;"
+        sql = "UPDATE admin_old.think_sms SET code =1234,`status`=0 WHERE phone=17637898368;"
         database.sql_execute(sql=sql)
 
         user = user_pro()
@@ -36,12 +36,12 @@ class userInfo:
             'phone': phone, 'grabTime': None, 'page': 1, 'pageSize': 10
         }
         re = self.userInfo.orderList(datas=payload, cookies=self.login_cookie)
+        print(re)
         # model_price
         model_price = re['data']['data'][0]['model_price']
-        print(model_price)
         return model_price
 
 
 if __name__ == "__main__":
     run = userInfo()
-    run.addOrder('13003672500', city_name='杭州市')
+    run.orderList(phone='11111111121')

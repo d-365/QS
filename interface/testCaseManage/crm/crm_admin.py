@@ -5,6 +5,8 @@
 # @describe:
 import time
 
+from loguru import logger
+
 from interface.data.CRM_Account import account
 from interface.project.crm.backend import backend_pro
 
@@ -31,6 +33,7 @@ class crm_admin:
         self.backend = backend_pro(environment=env)
         payload = account(user=loginName)
         re = self.backend.login(datas=payload)
+        logger.info('多融客用户登录{}'.format(re))
         self.userId = re['data']['userEntity']['id']
         self.token = re['data']['token']
         self.headers = {
@@ -240,15 +243,18 @@ class crm_admin:
             payload = {
                 'startTime': startTime_today,
                 'endTime': endTime_today,
+                'pageNum': 1,
+                'pageSize': 10
             }
         else:
             payload = {
                 'startTime': startTime,
                 'endTime': endTime,
+                'pageNum': 1,
+                'pageSize': 10
             }
         res = self.backend.customerList(datas=payload, headers=self.headers)
         clientList = res['data']['records']
-        print('多融客-客户管理-客户列表', clientList)
         return clientList
 
     # 多融客-客户管理-导出客户列表
@@ -279,11 +285,16 @@ class crm_admin:
         :param ID: 订单id
         """
         payload = {
-            'id': ID
+            'id': ID,
+            'pageNum': 1,
+            'pageSize': 5
         }
-        headers = {}
+        headers = {
+            'token':self.token
+        }
         res = self.backend.followList(params=payload, headers=headers)
-        return res
+        followList = res['data']['records']
+        return followList
 
     # 多融客 - 客户管理- 删除客户
     def deleteCustomer(self, Id):
@@ -294,7 +305,6 @@ class crm_admin:
             'ids': [Id]
         }
         res = self.backend.deleteCustomer(datas=payload, headers=self.headers)
-        print("删除客户", res)
         return res
 
     # 多融客 - 客户管理- 新建跟进
@@ -312,7 +322,7 @@ class crm_admin:
             'followContext': followContext
         }
         res = self.backend.addFollow(datas=payload, headers=self.headers)
-        print(res)
+        logger.debug('新建跟进{}'.format(res))
         return res
 
     # 多融客CRM-广告管理-广告列表
@@ -479,7 +489,15 @@ class crm_admin:
         res = self.backend.followCustomer(headers=self.headers, datas=payload)
         return res
 
+    # 删除客户跟进意向
+    def deleteFollow(self, Id):
+        payload = {
+            'ids': [Id]
+        }
+        res = self.backend.deleteFollow(headers=self.headers, datas=payload)
+        return res
+
 
 if __name__ == "__main__":
     run = crm_admin(env='', loginName='interface_gs_manage')
-    print(run.record(types=1))
+    run.followList(5160)

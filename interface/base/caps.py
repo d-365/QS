@@ -20,7 +20,9 @@ def Caps(env=''):
             # 多融客admin
             'crm_admin': 'http://testdrkadmin.wanqiandaikuan.com/',
             # 好单多多App
-            'xddd2': 'http://testxddd2.wanqiandaikuan.com/'
+            'xddd2': 'http://testxddd2.wanqiandaikuan.com/',
+            # CRM--电销开放平台
+            'tmk': 'http://testdrktm.wanqiandaikuan.com/'
         }
         return caps
 
@@ -28,7 +30,7 @@ def Caps(env=''):
     elif env == 'online':
         caps = {
             # 信贷多多后台
-            'admin': 'https://admin.91jiekuan.com/',
+            'admin_old': 'https://admin.91jiekuan.com/',
             # CRM + 多融客 后台
             'crm': 'https://drkmanager.wanqiandaikuan.com/'
         }

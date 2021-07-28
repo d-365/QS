@@ -13,7 +13,7 @@ from faker import Faker
 from loguru import logger
 
 from interface.data.order_data import order_data
-from interface.testCaseManage.crm.crm_general import crm_general
+from interface.testCaseManage.crm.general import crm_general
 from interface.tools.assert_custom import custom_assert
 from .conftest import setting
 
@@ -220,6 +220,53 @@ class Test_customerManage:
                 else:
                     i += 1
 
+    @allure.story("全部线索,新建跟进")
+    def test_case3(self, crmAdmin):
+        with allure.step('查询全部线索列表'):
+            endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+            clientList = crmAdmin.customerList(startTime='2021-07-01 00:00:00', endTime=endTime_today)
+            randInt = random.randint(0, len(clientList))
+            loanId = clientList[randInt]['id']
+            logger.debug("loanId: {}".format(loanId))
+        with allure.step(''):
+            f = Faker(locale='zh_CN')
+            followContext = f.sentence()
+            followWay = 0
+            customerIntention = 0
+            crmAdmin.addFollow(orderId=loanId, followContext=followContext, followWay=followWay,
+                               customerIntention=customerIntention)
+        with allure.step('用户意向断言'):
+            followList = crmAdmin.followList(ID=loanId)
+            assert followList[0]['followContext'] == followContext
+            assert followList[0]['followWay'] == followWay
+            assert followList[0]['customerIntention'] == customerIntention
+        with allure.step('删除跟进意向'):
+            followId = followList[0]['id']
+            crmAdmin.deleteFollow(Id=followId)
+            # 删除后断言
+            followList_after = crmAdmin.followList(ID=loanId)
+            assert followId != followList_after
+
+    @allure.story("全部线索_删除线索")
+    def test_case4(self, crmAdmin, crmManege):
+        with allure.step('查询全部线索列表'):
+            endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+            clientList = crmAdmin.customerList(startTime='2021-07-01 00:00:00', endTime=endTime_today)
+            logger.debug(clientList)
+            randInt = random.randint(0, len(clientList))
+            loanId = clientList[randInt]['id']
+            logger.debug("loanID:{}".format(loanId))
+        with allure.step('删除线索'):
+            crmAdmin.deleteCustomer(Id=loanId)
+            # 断言loanID 不在线索列表
+            clientList_after = crmAdmin.customerList(startTime='2021-07-01 00:00:00', endTime=endTime_today)
+            assert loanId not in clientList_after
+        with allure.step('恢复删除客户'):
+            crmManege.recoverCustomer(loanId=loanId)
+        with allure.step('断言loanID恢复到线索列表'):
+            clientList_afterAgain = crmAdmin.customerList(startTime='2021-07-01 00:00:00', endTime=endTime_today)
+            custom_assert().dict_json_include(expect_key='id', expect_value=loanId, dict_data=clientList_afterAgain)
+
 
 @allure.feature('CRM产品列表')
 class Test_product:
@@ -321,7 +368,10 @@ class Test_telemarketing:
             loanId = appAddOrder.get_loanId()
             logger.debug('loanID----{}'.format(loanId))
         with allure.step('电销中心列表断言'):
+            time.sleep(5)
             electrical_lists = crmManege.electrical(phone=setting['api_phone'])
+            print(electrical_lists)
+
             custom_assert().dict_json_include(expect_key='id', expect_value=loanId, dict_data=electrical_lists)
         with allure.step('保存订单,电销列表校验'):
             crmManege.electrical_save(loanID=loanId)
@@ -356,7 +406,7 @@ class Test_telemarketing:
             custom_assert().dict_json_include(expect_key='companyName', expect_value=companyName,
                                               dict_data=eligible_lists)
         with allure.step('推送对应订单至定制需电核广告'):
-            time.sleep(1)
+            time.sleep(2)
             crmManege.eligible_push(advertisingId=advert_id, thinkLoanId=loanId, companyName=companyName)
             time.sleep(3)
             detail_lists = crmManege.already_detail(loanID=loanId)
@@ -396,7 +446,8 @@ class Test_telemarketing:
 
     @allure.story("提交订单,进入非定制非电核")
     def test_case4(self, crmManege, appAddOrder):
-        with allure.step('开启人工,关闭自动截单按钮'):
+        with allure.step('关闭人工，自动截单按钮'):
+            crmManege.cutStatus(types=2, status=0)
             crmManege.cutStatus(types=1, status=0)
         with allure.step('创建非定制不需电核广告'):
             companyName = "dujun_gs_001"
@@ -407,7 +458,7 @@ class Test_telemarketing:
                        "electricalStatus": electricalStatus, "putCity": "全国",
                        "status": 1,
                        "suggestedPrice": 6, "requirement": {}, "noRequirement": {}, "customPlan": customPlan}
-            advert_id = crm_general().add_Advertising(ad_data=ad_data, cpcPrice=25)
+            crm_general().add_Advertising(ad_data=ad_data, cpcPrice=25)
         with allure.step('信业帮发起线索请求'):
             payload = order_data(city_name='安顺市')
             appAddOrder.app_addOrder(payload)
@@ -417,7 +468,66 @@ class Test_telemarketing:
             crmManege.electrical_save(loanID=loanId)
             crmManege.submitOrder(loanID=loanId)
         with allure.step('订单进入非定制非电核广告断言'):
-            detail_lists = crmManege.already_detail(loanID=loanId)
+            time.sleep(5)
+            detail_lists = crmManege.already_detail(loanId)
             assert detail_lists['advertisingName'] == advertisingName
             crm_general().assert_customList(loanId)
             logger.debug('-' * 20 + "发起线索,电销列表保存，进入非定制非电核" + '-' * 20)
+
+
+@allure.feature('创建电销开放平台总代理账号')
+class Test_CreatAgent:
+
+    @pytest.fixture(scope='session')
+    def setup(self):
+        pass
+
+    @allure.story("创建总代理商账号")
+    def test_case1(self, crmManege, faker):
+        with allure.step('输入合理的代理商，可正常保存'):
+            total_AgencyName = faker.word()
+            total_AgencyCode = faker.phone_number()
+            name = faker.word()
+            account = faker.phone_number()
+            password = 'test1234'
+            status = True
+            payload = {"totalAgencyName": total_AgencyName, "totalAgencyCode": total_AgencyCode, "name": name,
+                       "phone": '11111111119',
+                       'account': account, "password": password, "status": status}
+            crmManege.addUser(payload=payload)
+            with allure.step("总代账号列表断言"):
+                user_List = crmManege.userList(accounts=account, name=total_AgencyName)
+                assert user_List[0]['totalAgencyName'] == total_AgencyName
+                assert user_List[0]['totalAgencyCode'] == total_AgencyCode
+                assert user_List[0]['name'] == name
+                assert user_List[0]['account'] == account
+                assert user_List[0]['status'] == status
+            with allure.step("更新账户状态"):
+                userId = user_List[0]['id']
+                print(crmManege.updateStatus_total(Id=userId, status=False))
+                branchList_after = crmManege.userList(accounts=account, name=total_AgencyName)
+                print(branchList_after)
+                assert branchList_after[0]['status'] is False
+
+        with allure.step('不同代理商输入重复代码，不可输入'):
+            message2 = "该代码已存在"
+            totalAgencyName2 = faker.word()
+            account2 = faker.numerify()
+            payload2 = {"totalAgencyName": totalAgencyName2, "totalAgencyCode": total_AgencyCode, "name": name,
+                        "phone": '11111111119',
+                        'account': account2, "password": password, "status": True}
+            res = crmManege.addUser(payload=payload2)
+            assert res['msg'] == message2
+        with allure.step('输入重复的账号'):
+            message4 = "该代理商名称已存在"
+            totalAgencyCode4 = faker.phone_number()
+            payload4 = {"totalAgencyName": total_AgencyName, "totalAgencyCode": totalAgencyCode4, "name": name,
+                        "phone": '11111111119',
+                        'account': account, "password": password, "status": True}
+            res = crmManege.addUser(payload=payload4)
+            assert res['msg'] == message4
+
+        with allure.step('删除总代理商'):
+            crmManege.delUser(Id=userId)
+            branchList_after = crmManege.userList(accounts=account, name=total_AgencyName)
+            assert len(branchList_after) == 0

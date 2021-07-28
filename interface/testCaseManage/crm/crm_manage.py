@@ -5,6 +5,9 @@
 # @describe:
 import time
 
+import faker
+from loguru import logger
+
 from interface.data.CRM_Account import username, account
 from interface.data.order_data import crm_order_data, save_electricalData
 from interface.project.crm.manage import crm_pro
@@ -13,8 +16,9 @@ from interface.project.crm.manage import crm_pro
 class crm_manage(object):
     # 记录第一个被创建对象的引用
     instance = None
+
     # 记录是否执行过初始化动作
-    init_flag = False
+    # init_flag = False
 
     def __new__(cls, *args, **kwargs):
 
@@ -27,8 +31,6 @@ class crm_manage(object):
         return cls.instance
 
     def __init__(self, loginName, env=''):
-        if crm_manage.init_flag is False:
-            crm_manage.init_flag = True
         self.crm = crm_pro(environment=env)
         payload = account(user=loginName)
         re = self.crm.crm_login(datas=payload)
@@ -51,9 +53,10 @@ class crm_manage(object):
             'token': self.token
         }
         re = self.crm.undistributed(headers=header_data)
-        print('截单_待分配列表', re)
-        # ID = re['data']['records'][0]['id']
-        # return ID
+
+        wait_allotList = re['data']['records']
+        logger.debug('截单_待分配列表{}'.format(re))
+        return wait_allotList
 
     # 截单_待分配列表-退还订单
     def chargeBack(self, thinkLoanId):
@@ -404,7 +407,106 @@ class crm_manage(object):
         res = self.crm.submitOrder(headers=self.headers, datas=payload)
         return res
 
+    # 新增总代理商账户
+    def addUser(self, payload):
+        res = self.crm.addUser(headers=self.headers, datas=payload)
+        print('新增总代理商账户',res)
+        return res
+
+    # 开放平台账号列表(总代理)
+    def userList(self, name, accounts):
+        payload = {
+            'pageNum': 1,
+            'pageSize': 10,
+            'name': name,
+            'account': accounts
+        }
+        headers = {
+            'token':self.token
+        }
+        res = self.crm.userList(headers=headers, datas=payload)
+        userList = res['data']['records']
+        return userList
+
+    # 删除总代理账号
+    def delUser(self, Id):
+        payload = {
+            'id':Id
+        }
+        res = self.crm.delUser(headers=self.headers, datas=payload)
+        return res
+
+    # 更新总代理商账户状态
+    def updateStatus_total(self, Id, status):
+        payload = {
+            'id': Id,
+            'status': status
+        }
+        res = self.crm.updateStatus_total(headers=self.headers, datas=payload)
+        return res
+
+    # 全部线索--恢复已删除客户
+    def recoverCustomer(self, loanId):
+        payload = {
+            "id": loanId
+        }
+        res = self.crm.recoverCustomer(headers=self.headers, datas=payload)
+        return res
+
+    # 电销开放平台--订单列表
+    def tmk_list(self, createStartTime='', createEndTime='', dockingStartTime='', dockingEndTime='', loanId='',
+                 loanName='',
+                 dockingWay='', dockingType='', tmkId='', branchAgencyId=''):
+        """
+        :param createStartTime:填单开始时间
+        :param createEndTime: 填单截至时间
+        :param dockingStartTime:对接开始时间
+        :param dockingEndTime:对接截至时间
+        :param loanId:订单id
+        :param loanName:借款人姓名
+        :param dockingWay:对接方式
+        :param dockingType:对接类型
+        :param tmkId:话务员id
+        :param branchAgencyId:代理商id
+        """
+        startTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 00:00:00'
+        endTime_today = time.strftime('%Y-%m-%d', time.localtime()) + ' 23:59:59'
+        if createStartTime == '' and createEndTime == '':
+            payload = {
+                'createStartTime': startTime_today,
+                'createEndTime': endTime_today,
+                'dockingStartTime': dockingStartTime,
+                'dockingEndTime': dockingEndTime,
+                'loanId': loanId,
+                'loanName': loanName,
+                'dockingWay': dockingWay,
+                'dockingType': dockingType,
+                'tmkId': tmkId,
+                'branchAgencyId': branchAgencyId,
+                'pageNum': 1,
+                'pageSize': 10
+            }
+        else:
+            payload = {
+                'createStartTime': createStartTime,
+                'createEndTime': createEndTime,
+                'dockingStartTime': dockingStartTime,
+                'dockingEndTime': dockingEndTime,
+                'loanId': loanId,
+                'loanName': loanName,
+                'dockingWay': dockingWay,
+                'dockingType': dockingType,
+                'tmkId': tmkId,
+                'branchAgencyId': branchAgencyId,
+                'pageNum': 1,
+                'pageSize': 10
+            }
+        res = self.crm.tmk_list(headers=self.headers, datas=payload)
+        tmk_list = res['data']['records']
+        print(tmk_list)
+        return tmk_list
+
 
 if __name__ == "__main__":
-    run = crm_manage(username['管理员'], env='')
-    run.electrical_save(3408)
+    run = crm_manage(loginName='manage_interface')
+    print(run.electrical("18397858213"))

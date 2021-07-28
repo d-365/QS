@@ -4,8 +4,12 @@
 # @File    : conftest.py
 # @describe: conftest配置文件
 import time
+
 import pytest
-from interface.data.CRM_Account import username
+from faker import Faker
+
+from interface.data.CRM_Account import username, tmkUser
+from interface.project.crm.tmk import tmk_pro
 from interface.testCaseManage.api_manage.App_addOrder import addOrder
 from interface.testCaseManage.crm.crm_admin import crm_admin
 from interface.testCaseManage.crm.crm_manage import crm_manage
@@ -20,8 +24,22 @@ setting = {
 }
 
 
+# 电销开放平台后台---总代理账号
+@pytest.fixture(scope='function')
+def tmk(cmdOption):
+    tmk = tmk_pro(environment=cmdOption, loginName=tmkUser['总代理账号'])
+    return tmk
+
+
+# 电销开放平台后台---分代理账号
+@pytest.fixture(scope='function')
+def tmk_sub(cmdOption):
+    tmk_sub = tmk_pro(environment=cmdOption, loginName=tmkUser['分代理账号'])
+    return tmk_sub
+
+
 # CRM后台
-@pytest.fixture(scope='class')
+@pytest.fixture(scope='session')
 def crmManege(cmdOption):
     crm = crm_manage(env=cmdOption, loginName=username['管理员'])
     return crm
@@ -53,6 +71,13 @@ def appAddOrder(cmdOption):
 def appXdd2(cmdOption):
     xdd2_res = xdd2_manage(env=cmdOption, phone='13003672511')
     return xdd2_res
+
+
+# faker造数据
+@pytest.fixture(scope='session')
+def faker(cmdOption):
+    f = Faker(locale='zh_CN')
+    return f
 
 
 @pytest.fixture(scope='class')

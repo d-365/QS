@@ -189,7 +189,13 @@ class backend_pro:
         return res
 
     # 多融客-公海-我来跟进
-    def followCustomer(self,headers,datas):
+    def followCustomer(self, headers, datas):
+        url = self.caps['crm_admin'] + 'api/crm/customer/followCustomer'
+        res = self.re.post_json(url=url, headers=headers, datas=datas)
+        return res
+
+    # 删除客户跟进意向
+    def deleteFollow(self, headers, datas):
         url = self.caps['crm_admin'] + 'api/crm/customer/followCustomer'
         res = self.re.post_json(url=url, headers=headers, datas=datas)
         return res

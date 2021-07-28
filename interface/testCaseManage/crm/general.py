@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/7/6 15:00
 # @Author  : dujun
-# @File    : crm_general.py
+# @File    : general.py
 # @describe: CRM接口自动化常用方法和断言封装
 import time
-from interface.data.CRM_Account import username
+
+from interface.data.CRM_Account import username, tmkUser
 from interface.data.order_data import order_data
+from interface.project.crm.tmk import tmk_pro
 from interface.testCaseManage.api_manage.App_addOrder import addOrder
 from interface.testCaseManage.crm.crm_admin import crm_admin
 from interface.testCaseManage.crm.crm_manage import crm_manage
+from interface.tools.dataBase import DataBase
 
 
 class crm_general:
@@ -60,7 +63,7 @@ class crm_general:
 
     # 生成任意订单,推送给对应广告(定制需电核)
     def push_order(self, companyName, adName, electricalStatus, cpcPrice):
-        self.crmManege.recharge(companyName=companyName,threadMoney=cpcPrice)
+        self.crmManege.recharge(companyName=companyName, threadMoney=cpcPrice)
         self.crmManege.cutStatus(types=2, status=1)
         crm_general().setup_recharge(companyName=companyName)
         companyName = "dujun_gs_001"
@@ -72,14 +75,13 @@ class crm_general:
         # 查询广告ID
         advert_list = self.crmManege.advertisingList(companyName=companyName, advertisingName=adName,
                                                      electricalStatus=electricalStatus)
-        for i in range(0,len(advert_list)):
-            advert_id = advert_list[0]['id']
-            # 修改订单CPC出价
-            self.crm_admin.editAd(ID=advert_id, budgetConfig=99999, cpcPrice=cpcPrice)
+        advert_id = advert_list[0]['id']
+        # 修改订单CPC出价
+        self.crm_admin.editAd(ID=advert_id, budgetConfig=99999, cpcPrice=cpcPrice)
 
         # 信业帮发起订单
         payload = order_data(city_name='安顺市')
-        appAddOrder = addOrder(env='', phone='11111111119')
+        appAddOrder = addOrder(env='', phone='18397858213')
         appAddOrder.app_addOrder(payload)
         loanId = appAddOrder.get_loanId()
         # 推送对应广告
@@ -159,6 +161,24 @@ class crm_general:
         return advert_id
 
 
+# 电销开放平台常用方法封装
+class tmk_general:
+
+    def __init__(self):
+        self.tmk = tmk_pro(loginName='total_interface')
+
+    # 电销开放平台填单
+    def apply(self, phone, cityName):
+        phone = str(phone)
+        select_sql = "SELECT id FROM jgq.think_loan WHERE phone = '%s' ORDER BY id DESC;" % phone
+        update_sql = "update jgq.think_loan SET uid='test' WHERE phone = '%s' " % phone
+        DataBase().sql_execute(update_sql)
+        self.tmk.apply(cityName=cityName, phone=phone)
+        sql_result = DataBase().sql_execute(select_sql)
+        loanId = sql_result[0][0]
+        return loanId
+
+
 if __name__ == "__main__":
-    run = crm_general()
-    run.add_common_no(25)
+    run = tmk_general()
+    run.apply(phone='13003670001',cityName='杭州市')

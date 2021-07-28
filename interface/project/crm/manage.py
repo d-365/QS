@@ -174,23 +174,59 @@ class crm_pro:
     # 电销详情_推送订单(定制需电核)
     def eligible_push(self, headers, datas):
         url = self.caps['crm'] + 'api/crm/electrical/push'
-        res = self.req.request(method='post',data_is_json=True, url=url, headers=headers, data=datas)
+        res = self.req.request(method='post', data_is_json=True, url=url, headers=headers, data=datas)
         return res
 
     # 截单列表-已分配列表
-    def distributed_list(self, headers,params):
+    def distributed_list(self, headers, params):
         url = self.caps['crm'] + 'api/crm/loan/order/distributed/list'
-        res = self.req.request(method='get', url=url, headers=headers,data=params)
+        res = self.req.request(method='get', url=url, headers=headers, data=params)
         return res
 
     # 已分配列表-线索详情
-    def already_detail(self, headers,loanID):
+    def already_detail(self, headers, loanID):
         url = self.caps['crm'] + 'api/crm/loan/order/already/detail?id={}'.format(loanID)
         res = self.req.request(method='get', url=url, headers=headers)
         return res
 
     # 电销详情-提交订单
-    def submitOrder(self, headers,datas):
+    def submitOrder(self, headers, datas):
         url = self.caps['crm'] + 'api/crm/electrical/submitOrder'
-        res = self.req.request(method='post', url=url, headers=headers,data_is_json=True,data=datas)
+        res = self.req.request(method='post', url=url, headers=headers, data_is_json=True, data=datas)
+        return res
+
+    # 新增总代理商账户
+    def addUser(self, headers, datas):
+        url = self.caps['crm'] + 'api/backend/tmk/user/addUser'
+        res = self.req.request(method='post', url=url, headers=headers, data=datas,data_is_json=True)
+        return res
+
+    # 开放平台账号列表
+    def userList(self, headers, datas):
+        url = self.caps['crm'] + 'api/backend/tmk/user/userList'
+        res = self.req.request(method='get', url=url, headers=headers, data=datas)
+        return res
+
+    # 删除总代理账号
+    def delUser(self, headers, datas):
+        url = self.caps['crm'] + 'api/backend/tmk/user/delUser'
+        res = self.req.request(method='post', url=url, headers=headers, data=datas,data_is_json=True)
+        return res
+
+    # 全部线索--恢复已删除客户
+    def recoverCustomer(self, headers, datas):
+        url = self.caps['crm'] + 'api/backend/customer/recoverCustomer'
+        res = self.req.request(method='post', url=url,data_is_json=True, headers=headers, data=datas)
+        return res
+
+    # 电销开放平台--订单列表
+    def tmk_list(self,headers,datas):
+        url = self.caps['crm'] + 'api/crm/tmk/list'
+        res = self.req.request(method='get', url=url, headers=headers,data=datas,data_is_json=True)
+        return res
+
+    # 更新总代理商账户状态
+    def updateStatus_total(self,headers,datas):
+        url = self.caps['crm'] + 'api/backend/tmk/user/updateStatus'
+        res = self.req.request(method='post', url=url, headers=headers,data=datas,data_is_json=True)
         return res

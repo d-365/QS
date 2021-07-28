@@ -1,0 +1,4 @@
+2021-07-16 13:55:22.963 | INFO     | __main__:<module>:11 - If you're using Python 3.6, prefer f-strings of course!
+2021-07-16 13:55:38.962 | ERROR    | __main__:<module>:11 - hah
+NoneType: None
+2021-07-16 13:55:38.962 | INFO     | __main__:<module>:12 - If you're using Python 3.6, prefer f-strings of course!

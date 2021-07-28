@@ -3,7 +3,7 @@
 # @software: PyCharm
 # @file: userInformation.py
 # @time: 2021/5/27 11:21
-# @describe : 信业帮（信贷多多）后台项目
+# @describe : 好单多多后台
 
 from interface.base.caps import Caps
 from interface.base.request_raw import Base_requests

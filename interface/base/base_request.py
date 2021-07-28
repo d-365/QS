@@ -23,7 +23,7 @@ class base_requests:
             data = json.dumps(data)
 
         if method.lower() == 'get':
-            res = self.session.get(url=url, headers=headers, params=data)
+            res = self.session.get(url=url, headers=headers, params=data,data=data)
             return res.json()
         elif method.lower() == 'post':
             res = self.session.post(url=url, headers=headers, data=data)

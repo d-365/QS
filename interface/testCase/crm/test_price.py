@@ -3,13 +3,12 @@
 # @Author  : dujun
 # @File    : test_price.py
 # @describe: CRM管理后台
-import time
 
+import time
 import allure
 import pytest
-
 from interface.data.order_data import order_data
-from interface.testCaseManage.crm.crm_general import crm_general
+from interface.testCaseManage.crm.general import crm_general
 from interface.testCaseManage.xdd2_manage.assert_xdd2 import xdd2_assert
 
 

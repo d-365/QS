@@ -8,8 +8,8 @@
 import xlrd
 from xlutils.copy import copy
 from interface.data.orderData_excel import excel_addOrder
-from interface.project.admin.user import user_pro
-from interface.project.admin.userInformation import userInfo_pro
+from interface.project.admin_old.user import user_pro
+from interface.project.admin_old.userInformation import userInfo_pro
 from interface.tools.dataBase import DataBase
 
 
@@ -24,7 +24,7 @@ class userInfo:
         self.phone = None
         self.phone = phone
         # 重置信贷多多后台用户登录验证码
-        sql = "UPDATE admin.think_sms SET code =1234,`status`=0 WHERE phone=17637898368;"
+        sql = "UPDATE admin_old.think_sms SET code =1234,`status`=0 WHERE phone=17637898368;"
         self.database.sql_execute(sql=sql)
         sql2 = "DELETE  from jgq.think_loan WHERE phone = %s;" % self.phone
         self.database.sql_execute(sql2)
